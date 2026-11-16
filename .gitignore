@@ -1,0 +1,4 @@
+__pycache__/
+.claude/
+*.pyc
+the-system-backup-*.json

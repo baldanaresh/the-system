@@ -1,0 +1,74 @@
+name: System sync and reminders
+
+# Times are UTC. India (IST) = UTC + 5:30.
+# GitHub may start scheduled runs 5-30 minutes late.
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # refresh LeetCode data for the app
+    - cron: "30 2 * * *"     # 08:00 IST - morning brief
+    - cron: "30 13 * * *"    # 19:00 IST - evening check
+    - cron: "30 16 * * *"    # 22:00 IST - last call
+  workflow_dispatch:
+    inputs:
+      remind:
+        description: "Send a reminder now (for testing)"
+        type: choice
+        default: none
+        options: [none, morning, evening, last]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: system-sync
+  cancel-in-progress: false
+
+env:
+  LEETCODE_USER: Baldanaresh
+  CODEFORCES_USER: Naresh_304
+  TZ_OFFSET_MIN: "330"   # minutes ahead of UTC (India = 330)
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh LeetCode data
+        run: python scripts/job.py sync
+
+      - name: Commit data if it changed
+        run: |
+          git config user.name "system-bot"
+          git config user.email "system-bot@users.noreply.github.com"
+          git add data/leetcode.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: refresh submissions"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Pick reminder
+        id: pick
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          MANUAL: ${{ github.event.inputs.remind }}
+        run: |
+          mode="none"
+          case "$SCHEDULE" in
+            "30 2 * * *")  mode="morning" ;;
+            "30 13 * * *") mode="evening" ;;
+            "30 16 * * *") mode="last" ;;
+          esac
+          if [ -n "$MANUAL" ] && [ "$MANUAL" != "none" ]; then mode="$MANUAL"; fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+
+      - name: Send reminder
+        if: steps.pick.outputs.mode != 'none'
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python scripts/job.py remind ${{ steps.pick.outputs.mode }}

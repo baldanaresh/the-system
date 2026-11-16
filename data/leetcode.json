@@ -1,0 +1,300 @@
+{
+ "ok": true,
+ "user": "Baldanaresh",
+ "generated": 1794811852,
+ "submissions": [
+  {
+   "slug": "3sum-closest",
+   "title": "3Sum Closest",
+   "ts": 1790854668,
+   "accepted": false,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Two Pointers",
+    "Sorting"
+   ]
+  },
+  {
+   "slug": "print-binary-tree",
+   "title": "Print Binary Tree",
+   "ts": 1790852694,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Binary Tree"
+   ]
+  },
+  {
+   "slug": "maximum-binary-tree",
+   "title": "Maximum Binary Tree",
+   "ts": 1790772891,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Divide and Conquer",
+    "Stack",
+    "Tree",
+    "Monotonic Stack",
+    "Binary Tree",
+    "Cartesian Tree"
+   ]
+  },
+  {
+   "slug": "minimum-ascii-delete-sum-for-two-strings",
+   "title": "Minimum ASCII Delete Sum for Two Strings",
+   "ts": 1789993286,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming",
+    "Longest Common Subsequence"
+   ]
+  },
+  {
+   "slug": "edit-distance",
+   "title": "Edit Distance",
+   "ts": 1789992287,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "longest-common-subsequence",
+   "title": "Longest Common Subsequence",
+   "ts": 1789992047,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming",
+    "Longest Common Subsequence"
+   ]
+  },
+  {
+   "slug": "longest-common-subsequence",
+   "title": "Longest Common Subsequence",
+   "ts": 1789992008,
+   "accepted": false,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming",
+    "Longest Common Subsequence"
+   ]
+  },
+  {
+   "slug": "delete-operation-for-two-strings",
+   "title": "Delete Operation for Two Strings",
+   "ts": 1789991469,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming",
+    "Longest Common Subsequence"
+   ]
+  },
+  {
+   "slug": "delete-operation-for-two-strings",
+   "title": "Delete Operation for Two Strings",
+   "ts": 1789991441,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "String",
+    "Dynamic Programming",
+    "Longest Common Subsequence"
+   ]
+  },
+  {
+   "slug": "is-subsequence",
+   "title": "Is Subsequence",
+   "ts": 1789899279,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Two Pointers",
+    "String",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+   "title": "Best Time to Buy and Sell Stock with Cooldown",
+   "ts": 1789818123,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock-iv",
+   "title": "Best Time to Buy and Sell Stock IV",
+   "ts": 1789816079,
+   "accepted": true,
+   "difficulty": "hard",
+   "tags": [
+    "Array",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock-iii",
+   "title": "Best Time to Buy and Sell Stock III",
+   "ts": 1789814997,
+   "accepted": true,
+   "difficulty": "hard",
+   "tags": [
+    "Array",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock-ii",
+   "title": "Best Time to Buy and Sell Stock II",
+   "ts": 1789813708,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Dynamic Programming",
+    "Greedy"
+   ]
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock",
+   "title": "Best Time to Buy and Sell Stock",
+   "ts": 1789812366,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Array",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "slug": "insert-into-a-binary-search-tree",
+   "title": "Insert into a Binary Search Tree",
+   "ts": 1786772109,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Tree",
+    "Binary Search Tree",
+    "Binary Tree"
+   ]
+  },
+  {
+   "slug": "linked-list-components",
+   "title": "Linked List Components",
+   "ts": 1783820569,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Hash Table",
+    "Linked List"
+   ]
+  },
+  {
+   "slug": "rotate-list",
+   "title": "Rotate List",
+   "ts": 1783493272,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Two Pointers"
+   ]
+  },
+  {
+   "slug": "rotate-list",
+   "title": "Rotate List",
+   "ts": 1783493138,
+   "accepted": false,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Two Pointers"
+   ]
+  },
+  {
+   "slug": "rotate-list",
+   "title": "Rotate List",
+   "ts": 1783493064,
+   "accepted": false,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Two Pointers"
+   ]
+  },
+  {
+   "slug": "swapping-nodes-in-a-linked-list",
+   "title": "Swapping Nodes in a Linked List",
+   "ts": 1783492157,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Two Pointers"
+   ]
+  },
+  {
+   "slug": "swap-nodes-in-pairs",
+   "title": "Swap Nodes in Pairs",
+   "ts": 1783427876,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Recursion"
+   ]
+  },
+  {
+   "slug": "add-to-array-form-of-integer",
+   "title": "Add to Array-Form of Integer",
+   "ts": 1783418021,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Array",
+    "Math"
+   ]
+  },
+  {
+   "slug": "add-two-numbers",
+   "title": "Add Two Numbers",
+   "ts": 1783415800,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List",
+    "Math",
+    "Recursion"
+   ]
+  },
+  {
+   "slug": "reverse-linked-list-ii",
+   "title": "Reverse Linked List II",
+   "ts": 1782492057,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Linked List"
+   ]
+  }
+ ],
+ "contests": []
+}

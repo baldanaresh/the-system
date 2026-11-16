@@ -1,0 +1,2254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#03060f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SYSTEM">
+<title>THE SYSTEM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03060f; --acc:#3ea6ff; --acc2:#8b5cff; --cyan:#8fe0ff; --red:#ff3b4e; --gold:#ffc857; --green:#4dffb0;
+  --text:#d9eaff; --dim:#7f95b8; --panel:rgba(7,14,32,.66); --line:rgba(62,166,255,.38);
+  --fh:'Orbitron','Rajdhani','Segoe UI',system-ui,sans-serif;
+  --fb:'Rajdhani','Segoe UI',system-ui,-apple-system,sans-serif;
+  --fm:'Share Tech Mono',ui-monospace,Consolas,monospace;
+  --navw:78px; --toph:58px;
+}
+body.penalty{--acc:#ff3b4e; --acc2:#ff8a3b; --cyan:#ffb39a; --line:rgba(255,59,78,.45); --panel:rgba(30,6,8,.66)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--cyan)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:rgba(62,166,255,.3);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+.hidden{display:none!important}
+#fallbackBg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%,#12306b 0%,#071230 34%,#03060f 72%);transition:background 1.2s}
+body.penalty #fallbackBg{background:radial-gradient(ellipse at 50% 38%,#6b1a12 0%,#300a07 34%,#0f0303 72%)}
+#bg{position:fixed;inset:0;width:100%;height:100%;display:block}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:90}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.55) 100%);z-index:1}
+
+/* ---------- layout ---------- */
+#app{position:fixed;inset:0;z-index:2;display:grid;grid-template-columns:var(--navw) minmax(0,1fr);grid-template-rows:var(--toph) minmax(0,1fr)}
+#top,#nav,#view{min-width:0;min-height:0}
+#top{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,8,20,.9),rgba(3,8,20,.55));backdrop-filter:blur(8px)}
+.logo{font-family:var(--fh);font-weight:900;letter-spacing:.28em;font-size:15px;color:var(--cyan);text-shadow:0 0 14px var(--acc);white-space:nowrap}
+.logo small{display:block;font-size:8px;letter-spacing:.4em;color:var(--dim);font-weight:500}
+#hud{display:flex;align-items:center;gap:14px;flex:1;min-width:0;overflow:hidden;padding:8px 0}
+.hud-rank{font-family:var(--fh);font-weight:900;font-size:22px;width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--acc);color:var(--cyan);text-shadow:0 0 10px var(--acc);box-shadow:0 0 12px rgba(62,166,255,.35),inset 0 0 12px rgba(62,166,255,.2);transform:rotate(45deg);flex:none;margin:0 6px}
+.hud-rank b{transform:rotate(-45deg);font-size:15px}
+.hud-xp{flex:1;min-width:60px;max-width:420px}
+.hud-xp .lbl{display:flex;justify-content:space-between;font-family:var(--fm);font-size:11px;color:var(--dim);margin-bottom:3px;white-space:nowrap;gap:8px}
+.hud-chip{font-family:var(--fm);font-size:13px;white-space:nowrap;padding:4px 9px;border:1px solid var(--line);background:rgba(10,20,45,.5)}
+.hud-chip b{color:var(--cyan)}
+.iconbtn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line);background:rgba(10,20,45,.5);cursor:pointer;font-size:16px;flex:none}
+.iconbtn:hover{border-color:var(--acc);box-shadow:0 0 12px var(--line)}
+#nav{display:flex;flex-direction:column;gap:4px;padding:10px 6px;border-right:1px solid var(--line);background:linear-gradient(90deg,rgba(3,8,20,.85),rgba(3,8,20,.4));overflow-y:auto}
+.nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;border:1px solid transparent;background:none;cursor:pointer;color:var(--dim);font-family:var(--fh);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;position:relative;flex:none}
+.nav-i .ic{font-size:19px;line-height:1.1;font-family:var(--fb)}
+.nav-i:hover{color:var(--text)}
+.nav-i.on{color:var(--cyan);border-color:var(--line);background:rgba(62,166,255,.1);text-shadow:0 0 10px var(--acc)}
+.nav-i.on::before{content:"";position:absolute;left:-7px;top:20%;bottom:20%;width:3px;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.nav-i.alert{color:var(--red);animation:pulse 1.1s infinite}
+.nav-i kbd{position:absolute;top:2px;right:4px;font-family:var(--fm);font-size:8px;opacity:.45}
+#view{overflow-y:auto;overflow-x:hidden;padding:18px;position:relative}
+.vwrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+/* ---------- holographic window ---------- */
+.win{position:relative;background:var(--panel);border:1px solid var(--line);box-shadow:0 0 22px rgba(62,166,255,.13),inset 0 0 34px rgba(62,166,255,.06);backdrop-filter:blur(10px) saturate(1.3);-webkit-backdrop-filter:blur(10px) saturate(1.3);padding:16px;animation:flick .55s both}
+body.penalty .win{box-shadow:0 0 22px rgba(255,59,78,.18),inset 0 0 34px rgba(255,59,78,.07)}
+body.lowq .win,body.lowq #top{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(6,12,28,.88)}
+.win::before{content:"";position:absolute;inset:-2px;pointer-events:none;
+  background:
+   linear-gradient(var(--acc),var(--acc)) left top/16px 2px no-repeat,linear-gradient(var(--acc),var(--acc)) left top/2px 16px no-repeat,
+   linear-gradient(var(--acc),var(--acc)) right top/16px 2px no-repeat,linear-gradient(var(--acc),var(--acc)) right top/2px 16px no-repeat,
+   linear-gradient(var(--acc),var(--acc)) left bottom/16px 2px no-repeat,linear-gradient(var(--acc),var(--acc)) left bottom/2px 16px no-repeat,
+   linear-gradient(var(--acc),var(--acc)) right bottom/16px 2px no-repeat,linear-gradient(var(--acc),var(--acc)) right bottom/2px 16px no-repeat;
+  filter:drop-shadow(0 0 4px var(--acc))}
+.win::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(180deg,rgba(140,200,255,.045) 0 1px,transparent 1px 3px),linear-gradient(180deg,transparent 0,rgba(140,210,255,.07) 50%,transparent 100%);
+  background-size:100% 3px,100% 180px;background-repeat:repeat,no-repeat;animation:scan 6s linear infinite}
+.win>*{position:relative;z-index:1}
+.win-h{font-family:var(--fh);font-weight:700;font-size:13px;letter-spacing:.2em;color:var(--cyan);text-shadow:0 0 10px var(--acc);margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-transform:uppercase}
+.win-h::before{content:"[";color:var(--acc)}.win-h .t::after{content:"]";color:var(--acc);margin-left:10px}
+.win-h .t{display:inline-flex}
+@keyframes flick{0%{opacity:0;transform:scaleY(.02) scaleX(.6);filter:brightness(3)}35%{opacity:1;transform:scaleY(1.02) scaleX(1)}45%{opacity:.35}55%{opacity:1}65%{opacity:.6}100%{opacity:1;transform:none;filter:none}}
+@keyframes scan{0%{background-position:0 0,0 -180px}100%{background-position:0 0,0 900px}}
+@keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin .9s linear infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--line)}50%{box-shadow:0 0 22px var(--acc)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:none;opacity:1}}
+@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-7px,4px)}40%{transform:translate(6px,-5px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(4px,3px)}}
+.shake{animation:shake .45s}
+body.rm *{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}
+
+/* ---------- primitives ---------- */
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:14px;min-width:0}.sp{flex:1}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.dim{color:var(--dim)}.mono{font-family:var(--fm)}.acc{color:var(--cyan)}.redt{color:var(--red)}.goldt{color:var(--gold)}.greent{color:var(--green)}.sm{font-size:13px}.xs{font-size:11.5px}
+.big{font-family:var(--fh);font-weight:900;font-size:34px;line-height:1;color:var(--cyan);text-shadow:0 0 18px var(--acc)}
+h3.hh{font-family:var(--fh);font-size:12px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin:4px 0 8px}
+.btn{font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:9px 14px;border:1px solid var(--line);background:rgba(62,166,255,.08);color:var(--cyan);cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover:not(:disabled){background:rgba(62,166,255,.22);box-shadow:0 0 16px var(--line);border-color:var(--acc)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.pri{background:linear-gradient(180deg,rgba(62,166,255,.45),rgba(62,100,255,.25));color:#fff;border-color:var(--acc);text-shadow:0 0 8px #fff}
+body.penalty .btn.pri{background:linear-gradient(180deg,rgba(255,59,78,.5),rgba(180,30,40,.3))}
+.btn.red{color:var(--red);border-color:rgba(255,59,78,.5);background:rgba(255,59,78,.08)}
+.btn.s{padding:5px 9px;font-size:9.5px}
+.btn.ghost{background:none;border-color:transparent;color:var(--dim)}
+.tag{font-family:var(--fm);font-size:11px;padding:2px 7px;border:1px solid var(--line);color:var(--cyan);white-space:nowrap;display:inline-block}
+.tag.red{color:var(--red);border-color:rgba(255,59,78,.5)}.tag.gold{color:var(--gold);border-color:rgba(255,200,87,.5)}.tag.vio{color:#bfa5ff;border-color:rgba(139,92,255,.55)}.tag.green{color:var(--green);border-color:rgba(77,255,176,.45)}
+.bar{height:9px;background:rgba(120,160,220,.12);border:1px solid rgba(120,160,220,.22);position:relative;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc),var(--cyan));box-shadow:0 0 12px var(--acc);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.bar.hp>i{background:linear-gradient(90deg,#ff3b4e,#ff9a3b,#4dffb0)}
+.bar.boss{height:14px}.bar.boss>i{background:linear-gradient(90deg,#7a0f1c,#ff3b4e);box-shadow:0 0 12px #ff3b4e}
+.bar.gold>i{background:linear-gradient(90deg,#b5791a,var(--gold));box-shadow:0 0 12px var(--gold)}
+.bar.thin{height:5px}
+input[type=text],input[type=number],input[type=url],input[type=date],select,textarea{width:100%;background:rgba(4,10,24,.7);border:1px solid var(--line);padding:9px 10px;outline:none;font-family:var(--fb);font-size:15px;color:var(--text)}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 12px var(--line)}
+select option{background:#071226}
+label.f{display:flex;flex-direction:column;gap:4px;font-family:var(--fh);font-size:10px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form .full{grid-column:1/3}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.btn.on{background:rgba(62,166,255,.3);color:#fff;border-color:var(--acc);box-shadow:0 0 14px var(--line)}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-family:var(--fh);font-size:9.5px;letter-spacing:.14em;color:var(--dim);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);text-transform:uppercase}
+.tbl td{padding:7px 8px;border-bottom:1px solid rgba(120,160,220,.1);vertical-align:top}
+.tblwrap{overflow-x:auto}
+.empty{padding:22px;text-align:center;color:var(--dim);border:1px dashed rgba(120,160,220,.25)}
+
+/* ---------- hub ---------- */
+.hub{display:grid;grid-template-columns:minmax(300px,370px) 1fr minmax(300px,370px);gap:16px;min-height:calc(100vh - var(--toph) - 36px);align-items:start;max-width:none}
+.hub-mid{align-self:end;display:flex;justify-content:center;pointer-events:none;padding-bottom:6px}
+.army-badge{pointer-events:auto;text-align:center;font-family:var(--fh);letter-spacing:.3em;font-size:11px;color:var(--dim);padding:8px 18px;background:rgba(3,8,20,.5);border:1px solid var(--line)}
+.army-badge b{display:block;font-size:26px;color:#c9b5ff;text-shadow:0 0 16px var(--acc2);letter-spacing:.1em}
+.pname{font-family:var(--fh);font-weight:900;font-size:22px;letter-spacing:.06em;word-break:break-word}
+.ptitle{font-family:var(--fm);color:var(--gold);font-size:13px;letter-spacing:.08em}
+.statgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.statbox{text-align:center;border:1px solid rgba(120,160,220,.2);padding:6px 2px;background:rgba(4,10,24,.4)}
+.statbox b{display:block;font-family:var(--fh);font-size:17px;color:var(--cyan)}.statbox span{font-family:var(--fm);font-size:10px;color:var(--dim)}
+.kv{display:flex;justify-content:space-between;font-family:var(--fm);font-size:12px;color:var(--dim);margin:8px 0 3px}
+.kv b{color:var(--text);font-weight:400}
+canvas.radar{width:100%;max-width:300px;height:auto;aspect-ratio:1;display:block;margin:6px auto 0}
+
+/* ---------- quests ---------- */
+.quest{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid rgba(120,160,220,.18);background:rgba(4,10,24,.45);transition:.2s}
+.quest+.quest{margin-top:8px}
+.quest:hover{border-color:var(--line)}
+.quest.done{opacity:.55}.quest.done .qt{text-decoration:line-through}
+.chk{width:26px;height:26px;border:2px solid var(--acc);flex:none;display:grid;place-items:center;cursor:pointer;background:none;color:transparent;font-size:16px;font-weight:700;transition:.15s;margin-top:2px}
+.chk:hover:not(:disabled){box-shadow:0 0 14px var(--acc);background:rgba(62,166,255,.15)}
+.chk.on{background:var(--acc);color:#02101f;box-shadow:0 0 14px var(--acc);cursor:default}
+.qt{font-weight:700;font-size:17px;letter-spacing:.02em}.qd{color:var(--dim);font-size:14px;line-height:1.35}
+.qmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.warnline{font-family:var(--fm);font-size:12.5px;color:var(--red);border:1px solid rgba(255,59,78,.35);padding:8px 10px;background:rgba(255,59,78,.06);margin-top:12px}
+.count{font-family:var(--fm);font-size:15px;color:var(--cyan)}
+.pz-count{font-family:var(--fh);font-weight:900;font-size:clamp(40px,9vw,84px);color:var(--red);text-shadow:0 0 30px var(--red);letter-spacing:.06em;text-align:center}
+
+/* ---------- bosses / tower ---------- */
+.boss{display:flex;flex-direction:column;gap:10px}
+.boss .bn{font-family:var(--fh);font-weight:900;font-size:17px;letter-spacing:.08em}
+.boss.dead{opacity:.6}.boss.dead .bn{text-decoration:line-through;color:var(--dim)}
+.boss-sig{font-size:44px;line-height:1;filter:drop-shadow(0 0 12px var(--red))}
+.task{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:15px}
+.task.on{color:var(--dim);text-decoration:line-through}
+.floor{border-left:3px solid var(--acc)}
+.floor.locked{opacity:.5;border-left-color:#445}.floor.cleared{border-left-color:var(--gold)}
+.fnum{font-family:var(--fh);font-weight:900;font-size:42px;color:rgba(140,200,255,.25);line-height:1}
+.cond{margin:7px 0}.cond .kv{margin:0 0 3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--fm);font-size:11.5px;padding:3px 8px;border:1px solid rgba(120,160,220,.25);color:var(--dim);cursor:pointer;background:none}
+.chip.av{color:var(--text);border-color:var(--line)}.chip.ms{color:#02101f;background:var(--acc);border-color:var(--acc);box-shadow:0 0 10px var(--line)}
+.chip.sel{outline:2px solid var(--gold)}
+
+/* ---------- skills ---------- */
+.skills{display:grid;grid-template-columns:1fr 340px;gap:16px}
+#skillCv{width:100%;height:min(72vh,720px);display:block;cursor:pointer;touch-action:manipulation}
+
+/* ---------- trackers ---------- */
+.heat{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:6px}
+.hcell{padding:8px;border:1px solid rgba(120,160,220,.2);font-size:13px;cursor:pointer;background:rgba(4,10,24,.4)}
+.hcell b{display:block;font-family:var(--fm);font-size:15px}.hcell.sel{outline:2px solid var(--gold)}
+.pcard{border:1px solid rgba(120,160,220,.2);padding:12px;background:rgba(4,10,24,.4)}
+
+/* ---------- pipeline ---------- */
+.kan{display:grid;grid-template-columns:repeat(6,minmax(190px,1fr));gap:10px;overflow-x:auto;padding-bottom:8px}
+.kcol{background:rgba(4,10,24,.5);border:1px solid rgba(120,160,220,.2);padding:8px;min-height:220px;display:flex;flex-direction:column;gap:8px}
+.kcol.over{border-color:var(--acc);box-shadow:inset 0 0 22px var(--line)}
+.kcol h4{font-family:var(--fh);font-size:10px;letter-spacing:.14em;color:var(--cyan);display:flex;justify-content:space-between;text-transform:uppercase}
+.kcard{border:1px solid var(--line);padding:8px;background:rgba(10,22,50,.75);cursor:grab;font-size:14px}
+.kcard b{display:block;font-size:15px}
+.kcard .row{gap:4px;margin-top:6px}
+.climb{position:relative;height:74px;margin:14px 8px 4px}
+.climb .track{position:absolute;left:0;right:0;top:30px;height:10px;background:rgba(120,160,220,.12);border:1px solid rgba(120,160,220,.25)}
+.climb .fill{position:absolute;left:0;top:30px;height:10px;background:linear-gradient(90deg,var(--acc2),var(--acc),var(--gold));box-shadow:0 0 14px var(--acc);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.climb .mk{position:absolute;top:0;transform:translateX(-50%);text-align:center;font-family:var(--fm);font-size:11px;color:var(--dim);white-space:nowrap}
+.climb .mk::after{content:"";position:absolute;left:50%;top:26px;width:1px;height:18px;background:var(--dim)}
+.climb .mk.hit{color:var(--gold)}.climb .mk.me{color:var(--cyan);top:46px}.climb .mk.me::after{top:-18px;background:var(--cyan)}
+.climb .mk.ghost{color:#bfa5ff;top:46px}.climb .mk.ghost::after{top:-18px;background:#bfa5ff}
+
+/* ---------- analytics ---------- */
+.ring{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative}
+.ring::after{content:"";position:absolute;inset:12px;border-radius:50%;background:#050b1c}
+.ring>div{position:relative;z-index:1;text-align:center}
+.cal{display:grid;grid-auto-flow:column;grid-auto-columns:13px;justify-content:start;grid-template-rows:repeat(7,13px);gap:3px;overflow-x:auto;padding-bottom:4px}
+.cal i{width:13px;height:13px;background:rgba(120,160,220,.1);display:block}
+.cal i.c1{background:rgba(62,166,255,.35)}.cal i.c2{background:var(--acc);box-shadow:0 0 6px var(--acc)}.cal i.cm{background:rgba(255,59,78,.75)}.cal i.cf{background:rgba(139,92,255,.7)}.cal i.ct{outline:1px solid #fff}.cal i.cx{opacity:.25}
+canvas.chart{width:100%;height:220px;display:block}
+
+/* ---------- titles ---------- */
+.ach{padding:12px;border:1px solid rgba(120,160,220,.2);background:rgba(4,10,24,.45)}
+.ach.un{border-color:rgba(255,200,87,.5);box-shadow:inset 0 0 22px rgba(255,200,87,.07)}
+.ach.lock{opacity:.45}.ach b{font-family:var(--fh);font-size:13px;letter-spacing:.08em;display:block;margin-bottom:3px}
+.ach.un b{color:var(--gold);text-shadow:0 0 10px rgba(255,200,87,.5)}
+
+/* ---------- overlays ---------- */
+#toasts{position:fixed;top:calc(var(--toph) + 12px);right:14px;z-index:60;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - 28px));pointer-events:none}
+.toast{pointer-events:auto;cursor:pointer;padding:12px 14px}
+.toast .tt{font-family:var(--fh);font-size:11.5px;letter-spacing:.2em;color:var(--cyan);text-shadow:0 0 10px var(--acc);margin-bottom:4px}
+.toast.reward .tt{color:var(--gold);text-shadow:0 0 10px var(--gold)}.toast.warn{border-color:rgba(255,59,78,.6)}.toast.warn .tt{color:var(--red);text-shadow:0 0 10px var(--red)}
+.toast .tl{font-family:var(--fm);font-size:13px;line-height:1.45;min-height:1.4em;white-space:pre-wrap}
+#modal{position:fixed;inset:0;z-index:70;background:rgba(1,4,12,.72);display:grid;place-items:center;padding:14px;overflow-y:auto}
+.modal-win{width:min(600px,100%);max-height:calc(100vh - 28px);overflow-y:auto}
+#cine{position:fixed;inset:0;z-index:80;display:grid;place-items:center;text-align:center;pointer-events:auto;background:radial-gradient(ellipse at center,rgba(3,8,24,.35),rgba(1,3,10,.88));padding:20px;overflow:hidden}
+#cine.red{background:radial-gradient(ellipse at center,rgba(60,4,8,.45),rgba(12,1,2,.92))}
+#cine.arise{background:radial-gradient(ellipse at center,transparent 35%,rgba(1,3,10,.75));align-items:start;padding-top:10vh}
+#app{transition:opacity .45s}body.hide-ui #app,body.hide-ui #timer,body.hide-ui #toasts{opacity:0;pointer-events:none}
+#view.still .win{animation:none}
+.c-big{font-family:var(--fh);font-weight:900;font-size:clamp(40px,11vw,128px);letter-spacing:.12em;line-height:1;color:#fff;text-shadow:0 0 20px var(--cyan),0 0 60px var(--acc),0 0 120px var(--acc2)}
+.c-big.gold{text-shadow:0 0 20px #fff3c4,0 0 60px var(--gold),0 0 120px #ff8a00}
+.c-big.red{text-shadow:0 0 20px #ffb3b3,0 0 60px var(--red),0 0 120px #a00}
+.c-big.vio{text-shadow:0 0 20px #e2d6ff,0 0 60px var(--acc2),0 0 120px #4a1dff}
+.c-sub{font-family:var(--fh);font-size:clamp(12px,2.6vw,20px);letter-spacing:.42em;color:var(--cyan);margin-top:18px;text-transform:uppercase}
+.c-line{font-family:var(--fm);font-size:clamp(14px,2.4vw,19px);color:var(--text);margin-top:10px;line-height:1.5}
+.c-rank{font-family:var(--fh);font-weight:900;font-size:clamp(90px,24vw,240px);line-height:1;color:#fff;text-shadow:0 0 30px var(--gold),0 0 90px #ff8a00}
+.c-box{max-width:720px;width:100%}
+.c-skip{position:absolute;bottom:18px;left:0;right:0;font-family:var(--fm);font-size:11px;color:var(--dim);letter-spacing:.2em}
+.c-hpbar{width:min(520px,80vw);margin:22px auto 0}
+#awaken{position:fixed;inset:0;z-index:85;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at center,rgba(3,8,24,.25),rgba(1,3,10,.9))}
+.aw-win{width:min(620px,100%);padding:26px}
+.aw-text{font-family:var(--fm);font-size:clamp(15px,2.6vw,19px);line-height:1.6;min-height:5.2em;white-space:pre-wrap}
+.aw-text::after{content:"▮";animation:pulse .8s infinite;color:var(--acc);margin-left:2px}
+.aw-ctl{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+#timer{position:fixed;right:14px;bottom:14px;z-index:55;width:270px;padding:12px}
+#timer .tm{font-family:var(--fh);font-weight:900;font-size:40px;text-align:center;color:var(--cyan);text-shadow:0 0 18px var(--acc);letter-spacing:.06em}
+#timer .tq{font-size:13px;color:var(--dim);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#timer.brk .tm{color:var(--green);text-shadow:0 0 18px var(--green)}
+kbd.k{font-family:var(--fm);border:1px solid var(--line);padding:1px 6px;font-size:12px;color:var(--cyan)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){.hub{grid-template-columns:1fr 1fr}.hub-mid{grid-column:1/3;order:3}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.skills{grid-template-columns:1fr}}
+@media (max-width:760px){
+  :root{--toph:52px}
+  #app{grid-template-columns:minmax(0,1fr);grid-template-rows:var(--toph) minmax(0,1fr) 60px}
+  #top{grid-column:1;gap:8px;padding:0 10px}
+  .logo{font-size:12px;letter-spacing:.18em}.logo small{display:none}
+  .hud-chip.opt{display:none}.hud-xp .lbl span:last-child{display:none}#hud{gap:8px}.hud-xp .lbl span{overflow:hidden;text-overflow:ellipsis}
+  #nav{grid-row:3;flex-direction:row;border-right:0;border-top:1px solid var(--line);overflow-x:auto;overflow-y:hidden;padding:4px 6px;background:rgba(3,8,20,.92)}
+  .nav-i{min-width:62px;padding:6px 2px}.nav-i kbd{display:none}.nav-i.on::before{left:20%;right:20%;top:-5px;bottom:auto;width:auto;height:3px}
+  #view{padding:10px}
+  .hub,.grid2,.grid3{grid-template-columns:1fr}.hub-mid{grid-column:1;order:0;min-height:34vh}.hub{min-height:0}
+  .form{grid-template-columns:1fr}.form .full{grid-column:1}
+  #timer{right:8px;left:8px;bottom:68px;width:auto}
+  #toasts{top:calc(var(--toph) + 6px);right:8px}
+  .win{padding:12px}
+  #skillCv{height:56vh}
+}
+@media (prefers-reduced-motion:reduce){.win{animation:none}.win::after{animation:none}}
+</style>
+</head>
+<body>
+<div id="fallbackBg"></div>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="vig"></div>
+<div id="app" class="hidden">
+  <header id="top">
+    <div class="logo">THE SYSTEM<small>PLAYER INTERFACE</small></div>
+    <div id="hud"></div>
+    <button class="iconbtn" data-act="sync" id="syncBtn" title="Sync LeetCode / Codeforces (R)" aria-label="Sync accounts">⟳</button>
+    <button class="iconbtn" data-act="toggleSound" id="sndBtn" title="Mute / unmute (M)" aria-label="Toggle sound">♪</button>
+    <button class="iconbtn" data-act="settings" title="Settings (S)" aria-label="Settings">⚙</button>
+  </header>
+  <nav id="nav" aria-label="Main"></nav>
+  <main id="view"></main>
+</div>
+<div id="timer" class="win hidden"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal" class="hidden"><div class="win modal-win" id="modalBody"></div></div>
+<div id="cine" class="hidden"></div>
+<div id="awaken" class="hidden"></div>
+<div id="flash"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   THE SYSTEM — career progression interface
+   SECTION 1 — CONFIG: every balance number lives here. Tune freely.
+   ===================================================================== */
+const CONFIG = {
+  storageKey: 'the-system-save-v1',
+  xp: {
+    dsa: { easy: 15, medium: 30, hard: 60 },          // per logged problem
+    resultMult: { clean: 1, hint: 0.6, fail: 0.3 },   // multiplier by outcome
+    quest: { build: 40, review: 20, contest: 80, project: 110, sd: 45, weekly: 30 },
+    dailyClear: 50,          // bonus for finishing every daily quest
+    penaltyClear: 30,        // surviving the penalty zone
+    mistakeQuest: 20,        // spaced-repetition re-solve (clean); half if not clean
+    focusSession: 5,         // per finished pomodoro
+    focusSessionDailyCap: 8,
+    projectMilestone: 150,
+    readmeItem: 20,
+    mock: 100,
+    sdTopic: 40,
+    outreach: 10,            // per referral / application message
+    skillNode: 60,
+    weeklyBoss: 250,
+    floorBoss: 600           // multiplied by floor number
+  },
+  level: { base: 100, growth: 1.15 },                  // XP for level L→L+1 = base * growth^(L-1)
+  ranks: [                                             // needs BOTH total XP and best streak
+    { id: 'E', name: 'E-Rank', xp: 0, streak: 0 },
+    { id: 'D', name: 'D-Rank', xp: 1500, streak: 3 },
+    { id: 'C', name: 'C-Rank', xp: 5000, streak: 7 },
+    { id: 'B', name: 'B-Rank', xp: 12000, streak: 14 },
+    { id: 'A', name: 'A-Rank', xp: 25000, streak: 21 },
+    { id: 'S', name: 'S-Rank', xp: 45000, streak: 30 },
+    { id: 'N', name: 'National-Level', xp: 80000, streak: 45 }
+  ],
+  stat: {                                              // stat gains by activity
+    dsa: { easy: 0.5, medium: 1, hard: 2 },            // → INT
+    dsaFastBonus: 0.5,                                 // → AGI when solved clean under target time
+    dsaTargetMin: { easy: 15, medium: 30, hard: 45 },
+    dayClearVIT: 1, skillNode: 2, milestone: 1, mock: 1, sdTopic: 1
+  },
+  penalty: { xpLoss: 80, hpLoss: 25, failHp: 10, maxDaysCharged: 3 },
+  energy: { max: 100, dayClear: 8, penaltyClear: 10 },
+  freeze: { max: 2 },
+  difficulty: {
+    easy:   { label: 'Gentle',  xp: 1.25, penalty: 0.5 },
+    normal: { label: 'Hunter',  xp: 1.0,  penalty: 1.0 },
+    hard:   { label: 'Monarch', xp: 0.85, penalty: 1.5 }
+  },
+  srsDays: [1, 3, 7, 14],                              // mistake resurfacing schedule
+  weekly: { problems: [10, 12], outreach: [5, 10], outreachFromMonth: 3 },
+  pomodoro: { focusMin: 25, breakMin: 5 },
+  hours: { weekday: 2.5, weekend: 5.5 },               // baseline the quest minutes are scaled from
+  salary: { current: 3.8, milestones: [20, 30, 50] },  // LPA
+  readiness: { dsaTarget: 200, sdTarget: 15, mockTarget: 10, milestoneTarget: 8 },
+  quality: { particles: [1400, 3500, 7000], fpsDown: 38 },
+  army: { max: 140 },
+  accounts: { codeforces: 'Naresh_304', leetcode: 'Baldanaresh' },   // defaults; editable in Settings
+  verify: {
+    manualMult: 0.5,          // XP multiplier for hand-logged (unverified) problems while verification is on
+    autoSyncMin: 10,          // background sync interval while the app is open
+    auditEveryDays: 3,        // how often an old "clean" solve is re-tested
+    auditAfterDays: 7,        // minimum age of a solve before it can be audited
+    auditClawback: 0.5,       // share of the problem's XP lost when an audit is failed
+    cfRating: { medium: 1200, hard: 1700 }   // Codeforces rating → difficulty
+  }
+};
+
+/* ===================== SECTION 2 — STATIC DATA ===================== */
+const STATS = ['INT', 'AGI', 'STR', 'SENSE', 'VIT'];
+const STAT_DESC = { INT: 'DSA', AGI: 'Python / speed', STR: 'Backend & design', SENSE: 'GenAI', VIT: 'Consistency' };
+const PATTERNS = ['Arrays & Hashing', 'Two Pointers', 'Sliding Window', 'Binary Search', 'Stack / Queue', 'Linked List', 'Trees', 'Heaps', 'Graphs', 'Backtracking', 'Dynamic Programming', 'Greedy', 'Other'];
+const FLOOR_PATTERNS = { 1: ['Arrays & Hashing', 'Two Pointers', 'Sliding Window', 'Trees', 'Graphs', 'Dynamic Programming'], 2: PATTERNS.slice(0, 12), 3: PATTERNS.slice(0, 12) };
+const BR_ORDER = ['dsa', 'py', 'genai', 'be', 'sd', 'cs'];
+const BRANCHES = {
+  dsa: { n: 'DSA Patterns', stat: 'INT', col: '#3ea6ff' }, py: { n: 'Python', stat: 'AGI', col: '#4dffb0' },
+  genai: { n: 'GenAI Engineering', stat: 'SENSE', col: '#b78bff' }, be: { n: 'Backend', stat: 'STR', col: '#ffb14d' },
+  sd: { n: 'System Design', stat: 'STR', col: '#ff6b8b' }, cs: { n: 'CS Fundamentals', stat: 'INT', col: '#7fe0ff' }
+};
+const SKILLS = [
+  { id: 'arrays', n: 'Arrays & Hashing', ab: 'AH', br: 'dsa', d: 1, o: 0, req: [], fl: 1, desc: 'Frequency maps, prefix sums, in-place tricks. Master = 10+ problems solved without hints.' },
+  { id: 'twoptr', n: 'Two Pointers', ab: '2P', br: 'dsa', d: 2, o: -1, req: ['arrays'], fl: 1, desc: 'Opposite ends, fast/slow, partitioning. Master = you spot the pattern in under 2 minutes.' },
+  { id: 'stack', n: 'Stack / Queue', ab: 'SQ', br: 'dsa', d: 2, o: 0, req: ['arrays'], fl: 1, desc: 'Monotonic stacks, BFS queues, parentheses-style problems.' },
+  { id: 'binsearch', n: 'Binary Search', ab: 'BS', br: 'dsa', d: 2, o: 1, req: ['arrays'], fl: 1, desc: 'On arrays and on the answer space. Master = no off-by-one bugs.' },
+  { id: 'sliding', n: 'Sliding Window', ab: 'SW', br: 'dsa', d: 3, o: -1, req: ['twoptr'], fl: 1, desc: 'Fixed and variable windows, with hash-map state.' },
+  { id: 'trees', n: 'Trees', ab: 'TR', br: 'dsa', d: 3, o: 0, req: ['stack'], fl: 1, desc: 'DFS/BFS traversals, BST properties, LCA, path problems.' },
+  { id: 'graphs', n: 'Graphs', ab: 'GR', br: 'dsa', d: 4, o: -1, req: ['trees'], fl: 1, desc: 'BFS/DFS, topological sort, union-find, Dijkstra.' },
+  { id: 'heaps', n: 'Heaps', ab: 'HP', br: 'dsa', d: 4, o: 1, req: ['trees'], fl: 2, desc: 'Top-K, two heaps, merge K lists, scheduling.' },
+  { id: 'dp', n: 'Dynamic Programming', ab: 'DP', br: 'dsa', d: 5, o: 0, req: ['graphs'], fl: 1, desc: '1D/2D DP, knapsack, LIS, DP on strings. Master = you can define state + transition out loud.' },
+  { id: 'pycore', n: 'Python Core', ab: 'PY', br: 'py', d: 1, o: 0, req: [], fl: 1, desc: 'Data structures, comprehensions, functions, modules, error handling.' },
+  { id: 'pyoop', n: 'Pythonic OOP', ab: 'OO', br: 'py', d: 2, o: 0, req: ['pycore'], fl: 1, desc: 'Classes, dunder methods, dataclasses, decorators, generators, context managers.' },
+  { id: 'pyadv', n: 'Async, Typing & Tests', ab: 'AT', br: 'py', d: 3, o: 0, req: ['pyoop'], fl: 3, desc: 'asyncio, type hints, pytest. Production-grade Python.' },
+  { id: 'llm', n: 'LLM Fundamentals', ab: 'LM', br: 'genai', d: 1, o: 0, req: [], fl: 1, desc: 'Tokens, context windows, sampling, transformer intuition, API usage and cost.' },
+  { id: 'prompt', n: 'Prompt Engineering', ab: 'PE', br: 'genai', d: 2, o: -1, req: ['llm'], fl: 1, desc: 'System prompts, few-shot, structured output, guardrails.' },
+  { id: 'embed', n: 'Embeddings', ab: 'EM', br: 'genai', d: 2, o: 1, req: ['llm'], fl: 1, desc: 'Semantic similarity, chunking strategy, embedding model choice.' },
+  { id: 'vdb', n: 'Vector Databases', ab: 'VD', br: 'genai', d: 3, o: 1, req: ['embed'], fl: 1, desc: 'Indexing (HNSW/IVF), metadata filters, hybrid search.' },
+  { id: 'rag', n: 'RAG Pipelines', ab: 'RG', br: 'genai', d: 4, o: 0, req: ['vdb', 'prompt'], fl: 1, desc: 'Retrieval, re-ranking, grounding, citations. Master = a working RAG project on GitHub.' },
+  { id: 'agents', n: 'LangChain Agents', ab: 'AG', br: 'genai', d: 5, o: -1, req: ['rag'], fl: 2, desc: 'Tool calling, planning loops, memory, failure handling.' },
+  { id: 'ragas', n: 'RAGAS Evaluation', ab: 'EV', br: 'genai', d: 5, o: 1, req: ['rag'], fl: 2, desc: 'Faithfulness, answer relevancy, context precision/recall. Master = eval numbers in your README.' },
+  { id: 'rest', n: 'REST + FastAPI', ab: 'API', br: 'be', d: 1, o: 0, req: [], fl: 2, desc: 'Resource design, status codes, validation, auth, pagination, FastAPI.' },
+  { id: 'dbdesign', n: 'DB Design', ab: 'DB', br: 'be', d: 2, o: -1, req: ['rest'], fl: 2, desc: 'Schema modelling, normalisation, indexes, transactions.' },
+  { id: 'docker', n: 'Docker', ab: 'DK', br: 'be', d: 2, o: 1, req: ['rest'], fl: 2, desc: 'Images, multi-stage builds, compose. Master = your project runs with one command.' },
+  { id: 'micro', n: 'Microservices', ab: 'MS', br: 'be', d: 3, o: 0, req: ['docker', 'dbdesign'], fl: 2, desc: 'Service boundaries, queues, API gateways, observability.' },
+  { id: 'lld', n: 'Low-Level Design', ab: 'LLD', br: 'sd', d: 1, o: 0, req: [], fl: 2, desc: 'SOLID, design patterns, class diagrams. Parking lot, splitwise, rate limiter.' },
+  { id: 'hld', n: 'High-Level Design', ab: 'HLD', br: 'sd', d: 2, o: 0, req: ['lld'], fl: 2, desc: 'Requirements, estimation, caching, load balancing, sharding, trade-offs.' },
+  { id: 'dist', n: 'Distributed Systems', ab: 'DS', br: 'sd', d: 3, o: 0, req: ['hld'], fl: 3, desc: 'CAP, consensus, replication, consistency models, idempotency.' },
+  { id: 'oop', n: 'OOP Concepts', ab: 'OOP', br: 'cs', d: 1, o: 0, req: [], fl: 1, desc: 'Encapsulation, inheritance vs composition, polymorphism — with interview answers.' },
+  { id: 'dbms', n: 'DBMS', ab: 'DBM', br: 'cs', d: 2, o: -1, req: ['oop'], fl: 2, desc: 'ACID, isolation levels, joins, indexing internals, SQL fluency.' },
+  { id: 'os', n: 'Operating Systems', ab: 'OS', br: 'cs', d: 2, o: 1, req: ['oop'], fl: 2, desc: 'Processes vs threads, scheduling, memory, deadlocks, concurrency.' },
+  { id: 'net', n: 'Networks', ab: 'NET', br: 'cs', d: 3, o: 0, req: ['dbms', 'os'], fl: 2, desc: 'TCP/UDP, HTTP/HTTPS, DNS, what happens when you type a URL.' }
+];
+const SKILL_BY = Object.fromEntries(SKILLS.map(s => [s.id, s]));
+const WEEKLY_BOSSES = [
+  { id: 'contest', sig: '⚔️', name: 'The Contest Colossus', kind: 'Timed contest', stat: { INT: 2, AGI: 1 }, freeze: false,
+    tasks: ['Enter a timed contest (live or virtual) — no pausing', 'Solve at least 2 problems inside the time limit', 'Upsolve 1 problem you could not finish', 'Log every miss in the DSA log so it enters the mistake queue'] },
+  { id: 'mock', sig: '👁️', name: 'The Interrogator', kind: 'Mock interview', stat: { INT: 1, STR: 1 }, freeze: true,
+    tasks: ['Schedule a mock (peer, Pramp, or a recorded solo session)', 'Complete it while thinking out loud for the full duration', 'Record the score and feedback in the Mock log', 'Write 3 concrete fixes for next time'] },
+  { id: 'ship', sig: '⚙️', name: 'The Shipwright Golem', kind: 'Project milestone', stat: { SENSE: 2, STR: 1 }, freeze: false,
+    tasks: ['Define one milestone small enough to ship this week', 'Implement it', 'Test it end to end', 'Push to GitHub and update the README'] },
+  { id: 'design', sig: '🐉', name: 'The Architect Wyrm', kind: 'System-design write-up', stat: { STR: 3 }, freeze: true,
+    tasks: ['Pick one system (URL shortener, rate limiter, chat, feed…)', 'Write requirements and back-of-envelope estimates', 'Draw the high-level design', 'Write up trade-offs, bottlenecks and log it under System Design'] }
+];
+const PENALTY_TASKS = ['Solve 1 extra problem (or re-solve a past mistake) and log it', 'Do 20 minutes of revision on what you skipped', 'Write one line: why the day was missed, and the fix'];
+const README_ITEMS = [{ k: 'arch', n: 'Architecture diagram' }, { k: 'demo', n: 'Demo GIF / video / live link' }, { k: 'eval', n: 'Eval metrics (e.g. RAGAS scores)' }, { k: 'setup', n: 'One-command setup instructions' }, { k: 'design', n: 'Design decisions & trade-offs' }];
+const STAGES = [{ id: 'target', n: 'Target' }, { id: 'referral', n: 'Referral asked' }, { id: 'applied', n: 'Applied' }, { id: 'oa', n: 'OA' }, { id: 'interview', n: 'Interviews' }, { id: 'offer', n: 'Offer' }];
+const TIERS = ['FAANG-tier', 'Indian product', 'GCC / Finance', 'GenAI startup', 'Other'];
+const SEED_COMPANIES = [['Google', 0], ['Amazon', 0], ['Microsoft', 0], ['Flipkart', 1], ['Razorpay', 1], ['PhonePe', 1], ['Swiggy', 1], ['JPMorgan Chase', 2], ['Goldman Sachs', 2], ['Wells Fargo', 2], ['HSBC', 2], ['BlackRock', 2], ['FactSet', 2], ['GenAI startup (rename me)', 3]];
+const MOCK_TYPES = ['DSA', 'System Design', 'LLD', 'GenAI / ML', 'Behavioral', 'Full loop'];
+
+/* helpers used by floors / achievements / readiness */
+const solvedList = () => state.dsa.filter(d => d.result !== 'fail' && counts(d));
+const milestonesDone = () => state.projects.reduce((s, p) => s + p.milestones.filter(m => m.done).length, 0);
+const skillsIn = br => SKILLS.filter(s => s.br === br && state.skills[s.id]).length;
+const daysCleared = () => Object.values(state.days).filter(d => d.completed).length;
+const outreachTotal = () => Object.values(state.outreach).reduce((a, b) => a + b, 0);
+const readmeDone = p => README_ITEMS.filter(r => p.readme[r.k]).length;
+const mockAvg = n => { const a = state.mocks.slice(-n); return a.length ? a.reduce((s, m) => s + m.score, 0) / a.length : 0; };
+
+const FLOORS = [
+  { id: 1, name: 'The Foundation Depths', months: 'Months 1–2', sig: '🗝️', boss: 'Gatekeeper of Foundations', title: 'f1',
+    focus: ['Python fundamentals', 'DSA patterns: two pointers, sliding window, trees, graphs, DP', 'Start a RAG project'],
+    conds: [
+      { n: 'Problems solved', t: 60, v: () => solvedList().length },
+      { n: 'DSA pattern nodes mastered', t: 5, v: () => skillsIn('dsa') },
+      { n: 'Python Core mastered', t: 1, v: () => state.skills.pycore ? 1 : 0 },
+      { n: 'Project milestones shipped (RAG project)', t: 2, v: () => milestonesDone() },
+      { n: 'Daily quests cleared', t: 20, v: () => daysCleared() }
+    ] },
+  { id: 2, name: 'The Systems Stratum', months: 'Months 3–4', sig: '⛓️', boss: 'Warden of Systems', title: 'f2',
+    focus: ['RAGAS evaluation', 'LangChain agents', 'FastAPI + Docker', 'LLD / HLD practice', 'Begin mock interviews'],
+    conds: [
+      { n: 'Problems solved', t: 150, v: () => solvedList().length },
+      { n: 'RAGAS + Agents mastered', t: 2, v: () => (state.skills.ragas ? 1 : 0) + (state.skills.agents ? 1 : 0) },
+      { n: 'REST/FastAPI + Docker mastered', t: 2, v: () => (state.skills.rest ? 1 : 0) + (state.skills.docker ? 1 : 0) },
+      { n: 'System-design topics logged', t: 6, v: () => state.sd.length },
+      { n: 'Mock interviews logged', t: 3, v: () => state.mocks.length }
+    ] },
+  { id: 3, name: 'The Offer Summit', months: 'Months 5–6', sig: '👑', boss: 'Monarch of Offers', title: 'f3',
+    focus: ['Polish projects and resume', 'Apply with referrals', 'Continuous mocks'],
+    conds: [
+      { n: 'Projects with a complete README checklist', t: 2, v: () => state.projects.filter(p => readmeDone(p) === README_ITEMS.length).length },
+      { n: 'Referral / application messages sent', t: 25, v: () => outreachTotal() },
+      { n: 'Mock interviews logged', t: 10, v: () => state.mocks.length },
+      { n: 'Average of last 5 mocks (out of 10)', t: 7, v: () => state.mocks.length >= 5 ? Math.round(mockAvg(5) * 10) / 10 : 0 },
+      { n: 'Companies at interview or offer stage', t: 1, v: () => state.jobs.filter(j => j.stage === 'interview' || j.stage === 'offer').length }
+    ] }
+];
+const ACHIEVEMENTS = [
+  { id: 'weakest', n: 'The Weakest Hunter', d: 'Everyone starts at the bottom of the tower.', c: () => true },
+  { id: 'awakened', n: 'The Awakened', d: 'Clear your first full Daily Quest.', c: () => daysCleared() >= 1 },
+  { id: 'gate', n: 'Gate Clearer', d: 'Defeat your first weekly dungeon boss.', c: () => state.bossKills >= 1 },
+  { id: 'iron', n: 'Iron Will', d: 'Reach a 7-day streak.', c: () => state.bestStreak >= 7 },
+  { id: 'unbroken', n: 'The Unbroken', d: 'Reach a 30-day streak.', c: () => state.bestStreak >= 30 },
+  { id: 'p50', n: 'Pattern Breaker', d: 'Solve 50 problems.', c: () => solvedList().length >= 50 },
+  { id: 'p100', n: 'Century Slayer', d: 'Solve 100 problems.', c: () => solvedList().length >= 100 },
+  { id: 'eater', n: 'Mistake Eater', d: 'Graduate 10 problems out of the mistake queue.', c: () => state.srsGraduated >= 10 },
+  { id: 'ship', n: 'First Blood: Shipped', d: 'Ship your first project milestone.', c: () => milestonesDone() >= 1 },
+  { id: 'arch', n: 'The Architect', d: 'Log 10 system-design topics.', c: () => state.sd.length >= 10 },
+  { id: 'mock5', n: 'Interrogation Survivor', d: 'Complete 5 mock interviews.', c: () => state.mocks.length >= 5 },
+  { id: 'pen', n: 'Penalty Zone Survivor', d: 'Fall. Then clear the penalty quest.', c: () => state.penaltiesCleared >= 1 },
+  { id: 'ref', n: 'Referral Hunter', d: 'Send 20 referral / application messages.', c: () => outreachTotal() >= 20 },
+  { id: 'army10', n: 'Shadow Commander', d: 'Raise an army of 10 shadows.', c: () => armyCount() >= 10 },
+  { id: 'army30', n: 'Legion Lord', d: 'Raise an army of 30 shadows.', c: () => armyCount() >= 30 },
+  { id: 'f1', n: 'Conqueror of the Depths', d: 'Clear Floor I of the tower.', c: () => !!state.floors[1] },
+  { id: 'f2', n: 'Breaker of Systems', d: 'Clear Floor II of the tower.', c: () => !!state.floors[2] },
+  { id: 'f3', n: 'Summit Walker', d: 'Clear Floor III of the tower.', c: () => !!state.floors[3] },
+  { id: 'offer', n: 'Offer Claimed', d: 'Move a company to the Offer column.', c: () => state.jobs.some(j => j.stage === 'offer') },
+  { id: 'srank', n: 'Shadow Monarch', d: 'Reach S-Rank.', c: () => state.rankIdx >= 5 },
+  { id: 'nat', n: 'National-Level Hunter', d: 'Reach National-Level rank.', c: () => state.rankIdx >= 6 }
+];
+const ACH_BY = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
+
+/* ===================== SECTION 3 — UTILITIES ===================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const round5 = m => Math.max(5, Math.round(m / 5) * 5);
+let dayShift = 0;                                   // dev helper: SYS.shiftDays(n)
+const now = () => new Date(Date.now() + dayShift * 864e5);
+const dkey = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const todayKey = () => dkey(now());
+const parseKey = k => { const [a, b, c] = k.split('-').map(Number); return new Date(a, b - 1, c, 12); };
+const addDays = (k, n) => { const d = parseKey(k); d.setDate(d.getDate() + n); return dkey(d); };
+const dayDiff = (a, b) => Math.round((parseKey(b) - parseKey(a)) / 864e5);
+const weekKey = k => addDays(k, -((parseKey(k).getDay() + 6) % 7));
+const isWeekend = k => { const g = parseKey(k).getDay(); return g === 0 || g === 6; };
+const safeUrl = u => /^https?:\/\//i.test(u || '') ? u : '';
+const fmtDay = k => parseKey(k).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const msToMidnight = () => { const n = now(), m = new Date(n); m.setHours(24, 0, 0, 0); return m - n; };
+const hms = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60].map(v => String(v).padStart(2, '0')).join(':'); };
+
+/* ===================== SECTION 4 — STATE + PERSISTENCE ===================== */
+function defaultState() {
+  return {
+    v: 1, onboarded: false,
+    player: { name: 'Player', title: 'weakest', hoursWeekday: CONFIG.hours.weekday, hoursWeekend: CONFIG.hours.weekend, ctc: CONFIG.salary.current },
+    startDate: null, lastDate: null, totalXp: 0, rankIdx: 0,
+    stats: { INT: 5, AGI: 5, STR: 5, SENSE: 5, VIT: 5 },
+    hp: 100, streak: 0, bestStreak: 0, freezes: 0, penaltyPending: false, penaltyNotice: null, penaltiesCleared: 0, srsGraduated: 0,
+    days: {}, dsa: [], projects: [], mocks: [], sd: [], jobs: [], outreach: {}, skills: {}, weekly: {}, floors: {}, bossKills: 0, ach: {}, timer: null,
+    accounts: { cf: CONFIG.accounts.codeforces, lc: CONFIG.accounts.leetcode }, lastSync: 0,
+    settings: { sound: true, volume: 0.6, quality: 'auto', motion: 'auto', difficulty: 'normal', gyro: false, verify: true }
+  };
+}
+let state = defaultState();
+let persistOk = true;
+function mergeDefaults(s) {
+  const d = defaultState();
+  for (const k in d) if (s[k] === undefined || s[k] === null && d[k] !== null && typeof d[k] === 'object') s[k] = d[k];
+  for (const k of ['player', 'stats', 'settings', 'accounts']) s[k] = Object.assign({}, d[k], s[k]);
+  for (const p of s.projects) { p.milestones = p.milestones || []; p.readme = p.readme || {}; }
+  return s;
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(CONFIG.storageKey);
+    if (raw) { const s = JSON.parse(raw); if (s && typeof s === 'object' && s.player) state = mergeDefaults(s); }
+  } catch (e) { persistOk = false; console.warn('[SYSTEM] storage unavailable, running in memory', e); }
+}
+function save() {
+  try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); persistOk = true; }
+  catch (e) { persistOk = false; }
+}
+function exportSave() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'the-system-backup-' + todayKey() + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importSave(text) {
+  const s = JSON.parse(text);
+  if (!s || typeof s !== 'object' || !s.player || !s.stats || !Array.isArray(s.dsa)) throw new Error('Not a SYSTEM backup file');
+  state = mergeDefaults(s); save();
+}
+
+/* ===================== SECTION 5 — PROGRESSION LOGIC ===================== */
+const diffCfg = () => CONFIG.difficulty[state.settings.difficulty] || CONFIG.difficulty.normal;
+const xpForLevel = l => Math.round(CONFIG.level.base * Math.pow(CONFIG.level.growth, l - 1));
+function levelInfo(total = state.totalXp) {
+  let l = 1, floor = 0;
+  while (total >= floor + xpForLevel(l)) { floor += xpForLevel(l); l++; }
+  return { level: l, floor, into: total - floor, need: xpForLevel(l) };
+}
+function calcRankIdx() {
+  let idx = 0;
+  CONFIG.ranks.forEach((r, i) => { if (state.totalXp >= r.xp && state.bestStreak >= r.streak) idx = Math.max(idx, i); });
+  // ranks must be earned in order
+  for (let i = 1; i <= idx; i++) if (!(state.totalXp >= CONFIG.ranks[i].xp && state.bestStreak >= CONFIG.ranks[i].streak)) return i - 1;
+  return idx;
+}
+const rank = () => CONFIG.ranks[state.rankIdx];
+function dayRec(k = todayKey()) { return state.days[k] || (state.days[k] = { quests: [], xp: 0 }); }
+function addStats(st) { if (st) for (const k in st) state.stats[k] = Math.round((state.stats[k] + st[k]) * 10) / 10; }
+function gainXp(base, st) {
+  const amt = Math.max(0, Math.round(base * diffCfg().xp));
+  const before = levelInfo().level;
+  state.totalXp += amt; const rec = dayRec(); rec.xp = (rec.xp || 0) + amt;
+  addStats(st);
+  const after = levelInfo().level;
+  if (after > before) FX.levelUp(before, after);
+  checkRank();
+  return amt;
+}
+function checkRank() {
+  const idx = calcRankIdx();
+  if (idx > state.rankIdx) { state.rankIdx = idx; FX.rankUp(idx); }
+}
+function armyCount() {
+  return Math.min(CONFIG.army.max, Object.keys(state.skills).length + milestonesDone() + state.bossKills + Object.keys(state.floors).length * 3);
+}
+function currentFloor() { for (const f of FLOORS) if (!state.floors[f.id]) return f.id; return 3; }
+function monthNo() { return state.startDate ? Math.floor(dayDiff(state.startDate, todayKey()) / 30) + 1 : 1; }
+
+/* ---- daily quests ---- */
+function patternStats() {
+  const m = {}; PATTERNS.forEach(p => m[p] = { n: 0, clean: 0, hint: 0, fail: 0 });
+  for (const d of state.dsa) { const s = m[d.pattern] || m.Other; s.n++; s[d.result]++; }
+  return m;
+}
+function weakestPattern(key) {
+  const ps = patternStats(), list = FLOOR_PATTERNS[currentFloor()];
+  const score = p => ps[p].n + (ps[p].n ? (ps[p].clean / ps[p].n) * 3 : 0);
+  const min = Math.min(...list.map(score));
+  const cands = list.filter(p => score(p) <= min + 0.001);
+  return cands[Math.abs(dayDiff('2024-01-01', key)) % cands.length];
+}
+function genQuests(key) {
+  const wkend = isWeekend(key), fl = currentFloor(), dn = Math.abs(dayDiff('2024-01-01', key));
+  const sc = wkend ? clamp(state.player.hoursWeekend / CONFIG.hours.weekend, 0.4, 1.6) : clamp(state.player.hoursWeekday / CONFIG.hours.weekday, 0.4, 1.8);
+  const Q = (type, title, desc, min, extra) => Object.assign({ id: uid(), type, title, desc, min: round5(min * sc), xp: CONFIG.xp.quest[type] || 0, done: false }, extra);
+  const q = [];
+  if (!wkend) {
+    const pat = weakestPattern(key);
+    q.push(Q('dsa', 'Hunt: 1 Medium problem', 'Timed. No hints for the first 20 minutes. Log it when done.', 45, { diff: 'medium' }));
+    q.push(Q('dsa', 'Pattern Drill: ' + pat, 'One problem on your weakest pattern. Name the pattern before you code.', 30, { pattern: pat }));
+    const build = { 1: [['Python fundamentals', 'Write code, not notes: one concept, one small script.', { AGI: 1 }], ['RAG project: build session', 'Move the RAG project forward by one visible step.', { SENSE: 1 }]],
+      2: [['LangChain agents', 'Build or extend an agent with one tool.', { SENSE: 1 }], ['FastAPI + Docker', 'Expose your project as an API or containerise it.', { STR: 1 }], ['RAGAS evaluation', 'Measure your pipeline. Record the numbers.', { SENSE: 1 }]],
+      3: [['Polish a project + README', 'Diagram, demo, metrics. Make it recruiter-proof.', { SENSE: 1 }], ['Resume + applications', 'Tailor the resume, send referral messages, log them in Pipeline.', { VIT: 0.5, STR: 0.5 }], ['Targeted mock prep', 'Rehearse project deep-dives and behavioural stories.', { STR: 1 }]] }[fl];
+    const b = build[dn % build.length];
+    q.push(Q('build', 'Build / Learn: ' + b[0], b[1], 60, { stat: b[2] }));
+    const rev = [['System design concept', 'One concept (caching, queues, sharding…). Explain it in 5 sentences.', { STR: 0.5 }, true], ['CS fundamentals', 'OS / DBMS / Networks / OOP — one topic, interview-answer style.', { INT: 0.5 }], ['Mistake revision', 'Clear the Mistake Queue, or re-read the last 3 problems you failed.', { INT: 0.5 }]][dn % 3];
+    q.push(Q('review', 'Review: ' + rev[0], rev[1], 30, { stat: rev[2], askSd: !!rev[3] }));
+  } else {
+    const sat = parseKey(key).getDay() === 6;
+    q.push(Q('contest', sat ? 'Timed contest' : 'Mock interview / timed mock set', sat ? 'LeetCode weekly/biweekly or a virtual contest. Full duration, no pausing.' : 'A real mock if you can get one; otherwise 2 problems in 60 minutes, spoken aloud.', 90, { stat: { INT: 1, AGI: 1 } }));
+    q.push(Q('project', 'Project deep work', 'Three focused hours on your current project milestone. Ship something visible.', 180, { stat: { SENSE: 1, STR: 1 } }));
+    q.push(Q('sd', 'System design / LLD session', 'One full design: requirements → estimates → diagram → trade-offs.', 60, { stat: { STR: 2 }, askSd: true }));
+    q.push(Q('weekly', sat ? 'Mistake revision + plan' : 'Weekly review', sat ? 'Drain the Mistake Queue and plan tomorrow.' : 'Open Analytics. Compare against the weekly targets. Pick ONE thing to fix.', 30, { stat: { VIT: 1 } }));
+  }
+  return q;
+}
+/* Called on boot and whenever the date changes. Applies penalties for missed days and assigns today's quest. */
+function rollover() {
+  const t = todayKey(); let report = null;
+  if (!state.startDate) state.startDate = t;
+  if (state.lastDate && state.lastDate < t) {
+    const missed = []; let frozen = 0;
+    for (let d = state.lastDate; d < t; d = addDays(d, 1)) {
+      const rec = dayRec(d);
+      if (rec.penalty && !rec.penalty.done) { state.penaltyPending = true; state.hp = clamp(state.hp - CONFIG.penalty.failHp, 0, CONFIG.energy.max); }
+      if (rec.completed) continue;
+      if (state.freezes > 0) { state.freezes--; rec.frozen = true; frozen++; continue; }
+      rec.missed = true; missed.push(d);
+    }
+    if (missed.length) {
+      const pm = diffCfg().penalty, charged = Math.min(missed.length, CONFIG.penalty.maxDaysCharged);
+      const before = state.totalXp;
+      state.totalXp = Math.max(levelInfo().floor, state.totalXp - Math.round(CONFIG.penalty.xpLoss * pm * charged));
+      state.hp = clamp(Math.round(state.hp - CONFIG.penalty.hpLoss * pm * charged), 0, CONFIG.energy.max);
+      report = { missed: missed.length, xpLost: before - state.totalXp, streakLost: state.streak, frozen };
+      state.streak = 0; state.penaltyPending = true;
+    } else if (frozen) report = { missed: 0, frozen, xpLost: 0, streakLost: 0 };
+  } else if (state.lastDate && state.lastDate > t) { /* clock moved backwards: do nothing */ }
+  state.lastDate = t;
+  const rec = dayRec(t);
+  if (!rec.quests || !rec.quests.length) {
+    rec.quests = genQuests(t); pickAudit(t);
+    if (state.penaltyPending) { rec.penalty = { tasks: PENALTY_TASKS.map(() => false), done: false }; state.penaltyPending = false; }
+  }
+  if (report) state.penaltyNotice = report;
+  save();
+  return report;
+}
+const penaltyActive = () => { const r = state.days[todayKey()]; return !!(r && r.penalty && !r.penalty.done); };
+function completeQuest(id) {
+  const rec = dayRec(), q = rec.quests.find(x => x.id === id);
+  if (!q || q.done) return null;
+  q.done = true;
+  const xp = q.xp ? gainXp(q.xp, q.stat) : 0;
+  if (q.xp) FX.notify('info', 'QUEST OBJECTIVE CLEARED', [q.title, '+' + xp + ' XP' + statLine(q.stat)]);
+  FX.sfx('confirm');
+  checkDayComplete();
+  return q;
+}
+const statLine = st => st ? Object.keys(st).map(k => '  ' + k + ' +' + st[k]).join('') : '';
+function checkDayComplete() {
+  const rec = dayRec();
+  if (rec.completed || !rec.quests.length || !rec.quests.every(q => q.done)) return false;
+  rec.completed = true;
+  state.streak++; state.bestStreak = Math.max(state.bestStreak, state.streak);
+  state.hp = clamp(state.hp + CONFIG.energy.dayClear, 0, CONFIG.energy.max);
+  const xp = gainXp(CONFIG.xp.dailyClear, { VIT: CONFIG.stat.dayClearVIT });
+  FX.dayClear({ xp, streak: state.streak });
+  return true;
+}
+function strikePenalty(i) {
+  const rec = dayRec(); if (!rec.penalty || rec.penalty.done || rec.penalty.tasks[i]) return;
+  rec.penalty.tasks[i] = true; FX.sfx('hit');
+  if (rec.penalty.tasks.every(Boolean)) {
+    rec.penalty.done = true; state.penaltiesCleared++;
+    state.hp = clamp(state.hp + CONFIG.energy.penaltyClear, 0, CONFIG.energy.max);
+    const xp = gainXp(CONFIG.xp.penaltyClear, { VIT: 1 });
+    FX.penaltyCleared(xp);
+  }
+}
+/* ---- focus sessions ---- */
+function focusDone(label) {
+  const rec = dayRec(); rec.focus = (rec.focus || 0) + 1;
+  if (rec.focus <= CONFIG.xp.focusSessionDailyCap) { const xp = gainXp(CONFIG.xp.focusSession); FX.notify('info', 'FOCUS SESSION COMPLETE', [label || 'Deep work', '+' + xp + ' XP · take a short break']); }
+  else FX.notify('info', 'FOCUS SESSION COMPLETE', [label || 'Deep work', 'Daily focus XP cap reached — still counts.']);
+}
+/* ---- DSA log + spaced repetition ---- */
+function addDsa(e) {
+  const t = e.date || todayKey(), half = verifyOn() && !e.verified;
+  const it = { id: uid(), name: e.name, link: safeUrl(e.link), diff: e.diff, pattern: e.pattern, time: +e.time || 0, result: e.result, date: t, reviews: 0, srs: null, verified: !!e.verified, half };
+  if (e.verified) Object.assign(it, { key: e.key, src: e.src, firstAc: e.firstAc, lastAc: e.lastAc, fails: e.fails || 0 });
+  if (it.result !== 'clean') it.srs = { stage: 0, due: addDays(todayKey(), CONFIG.srsDays[0]) };
+  state.dsa.push(it);
+  const mult = CONFIG.xp.resultMult[it.result] * (half ? CONFIG.verify.manualMult : 1);
+  const st = { INT: Math.round(CONFIG.stat.dsa[it.diff] * (it.result === 'fail' ? 0.3 : 1) * (half ? 0.5 : 1) * 10) / 10 };
+  if (it.result === 'clean' && it.time > 0 && it.time <= CONFIG.stat.dsaTargetMin[it.diff]) st.AGI = CONFIG.stat.dsaFastBonus;
+  const xp = gainXp(CONFIG.xp.dsa[it.diff] * mult, st);
+  if (!e.quiet) FX.notify(it.result === 'clean' && !half ? 'reward' : 'info', half ? 'LOGGED — UNVERIFIED' : it.result === 'fail' ? 'PROBLEM LOGGED — MARKED FOR REVENGE' : 'PROBLEM SLAIN', [it.name, '+' + xp + ' XP' + statLine(st), half ? 'Half XP, no quest credit until a matching accepted submission is synced.' : it.srs ? 'Resurfaces in ' + CONFIG.srsDays[0] + ' day as a Mistake Quest' : 'Clean solve']);
+  // auto-tick the first open DSA quest of today (verified solves only while verification is on)
+  if (t === todayKey() && !half) {
+    const rec = dayRec(); const pref = rec.quests.find(q => q.type === 'dsa' && !q.done && q.pattern === it.pattern) || rec.quests.find(q => q.type === 'dsa' && !q.done);
+    if (pref) { pref.done = true; FX.sfx('confirm'); checkDayComplete(); }
+  }
+  return it;
+}
+const srsDue = () => state.dsa.filter(d => d.srs && d.srs.due <= todayKey());
+const srsAll = () => state.dsa.filter(d => d.srs).sort((a, b) => a.srs.due < b.srs.due ? -1 : 1);
+function reviewMistake(id, result) {
+  const it = state.dsa.find(d => d.id === id); if (!it || !it.srs) return;
+  if (verifyOn() && it.verified && result !== 'fail' && !freshAc(it)) { FX.notify('warn', 'NOT VERIFIED', ['Re-submit it on ' + it.src + ' and sync first.']); return; }
+  const t = todayKey(), audit = !!it.srs.audit; it.reviews = (it.reviews || 0) + 1; it.usedAc = it.lastAc || 0;
+  let msg, xpBase = CONFIG.xp.mistakeQuest * (result === 'clean' ? 1 : 0.5);
+  if (audit) {
+    it.audited = t;
+    if (result === 'clean') { it.srs = null; msg = 'Audit passed. The solve stands.'; }
+    else {
+      const loss = Math.round(CONFIG.xp.dsa[it.diff] * CONFIG.verify.auditClawback);
+      state.totalXp = Math.max(levelInfo().floor, state.totalXp - loss); xpBase = 0;
+      it.result = 'hint'; it.srs = { stage: 0, due: addDays(t, CONFIG.srsDays[0]) };
+      msg = 'Audit failed: −' + loss + ' XP. It was not really clean — now in the mistake queue.';
+    }
+  } else if (result === 'clean') {
+    it.srs.stage++;
+    if (it.srs.stage >= CONFIG.srsDays.length) { it.srs = null; state.srsGraduated++; msg = 'Graduated from the mistake queue.'; }
+    else { it.srs.due = addDays(t, CONFIG.srsDays[it.srs.stage]); msg = 'Next resurfacing in ' + CONFIG.srsDays[it.srs.stage] + ' days.'; }
+  } else { it.srs.stage = 0; it.srs.due = addDays(t, CONFIG.srsDays[0]); msg = 'Not clean yet — returns tomorrow.'; }
+  const xp = xpBase ? gainXp(xpBase, { INT: 0.5 }) : 0;
+  FX.notify(result === 'clean' ? 'reward' : audit ? 'warn' : 'info', audit ? 'AUDIT' : 'MISTAKE QUEST', [it.name, xp ? '+' + xp + ' XP  INT +0.5' : '', msg]);
+}
+/* ---- projects / mocks / system design ---- */
+function addProject(name, repo) { state.projects.push({ id: uid(), name, repo: safeUrl(repo), milestones: [], readme: {}, created: todayKey() }); }
+function toggleMilestone(pid, mid) {
+  const p = state.projects.find(x => x.id === pid), m = p && p.milestones.find(x => x.id === mid); if (!m) return;
+  m.done = !m.done; m.doneDate = m.done ? todayKey() : null;
+  if (m.done && !m.paid) {
+    m.paid = true;
+    const xp = gainXp(CONFIG.xp.projectMilestone, { SENSE: CONFIG.stat.milestone, STR: CONFIG.stat.milestone });
+    FX.notify('reward', 'MILESTONE SHIPPED', [m.t, '+' + xp + ' XP  SENSE +1  STR +1']); FX.arise(m.t);
+  }
+}
+function toggleReadme(pid, k) {
+  const p = state.projects.find(x => x.id === pid); if (!p) return;
+  p.readme[k] = !p.readme[k]; p.paidReadme = p.paidReadme || {};
+  if (p.readme[k] && !p.paidReadme[k]) { p.paidReadme[k] = true; gainXp(CONFIG.xp.readmeItem, { SENSE: 0.5 }); FX.sfx('confirm'); }
+}
+function addMock(m) {
+  state.mocks.push({ id: uid(), date: m.date || todayKey(), type: m.type, score: clamp(+m.score || 0, 0, 10), by: m.by || '', notes: m.notes || '' });
+  state.mocks.sort((a, b) => a.date < b.date ? -1 : 1);
+  const st = m.type === 'System Design' || m.type === 'LLD' ? { STR: 1.5 } : m.type === 'GenAI / ML' ? { SENSE: 1.5 } : { INT: 1, AGI: 0.5 };
+  const xp = gainXp(CONFIG.xp.mock, st);
+  FX.notify('reward', 'MOCK INTERVIEW SURVIVED', [m.type + ' · ' + m.score + '/10', '+' + xp + ' XP' + statLine(st)]);
+}
+function addSd(s) {
+  state.sd.push({ id: uid(), date: todayKey(), topic: s.topic, kind: s.kind || 'HLD', notes: s.notes || '' });
+  const xp = gainXp(CONFIG.xp.sdTopic, { STR: CONFIG.stat.sdTopic });
+  FX.notify('info', 'DESIGN KNOWLEDGE ACQUIRED', [s.topic, '+' + xp + ' XP  STR +1']);
+}
+/* ---- job pipeline ---- */
+function addJob(j) { state.jobs.push({ id: uid(), company: j.company, role: j.role || '', tier: j.tier || 'Other', stage: j.stage || 'target', link: safeUrl(j.link), notes: j.notes || '', ctc: +j.ctc || 0, counted: {}, updated: todayKey() }); }
+function setJobStage(id, stage) {
+  const j = state.jobs.find(x => x.id === id); if (!j || j.stage === stage) return;
+  j.stage = stage; j.updated = todayKey(); j.counted = j.counted || {};
+  if ((stage === 'referral' || stage === 'applied') && !j.counted[stage]) { j.counted[stage] = true; logOutreach(1, j.company); }
+  if (stage === 'offer') FX.notify('reward', 'OFFER STAGE REACHED', [j.company, 'Negotiate. Then update your CTC in Settings.']);
+  FX.sfx('blip');
+}
+function logOutreach(n, label) {
+  const t = todayKey(); state.outreach[t] = (state.outreach[t] || 0) + n;
+  const xp = gainXp(CONFIG.xp.outreach * n, { VIT: 0.2 });
+  FX.notify('info', 'OUTREACH LOGGED', [(label ? label + ' · ' : '') + '+' + xp + ' XP', 'This week: ' + weekStats(weekKey(t)).outreach + ' / ' + CONFIG.weekly.outreach.join('–')]);
+}
+/* ---- skill tree ---- */
+const skillAvail = s => !state.skills[s.id] && s.req.every(r => state.skills[r]);
+function masterSkill(id) {
+  const s = SKILL_BY[id]; if (!s || !skillAvail(s)) return false;
+  state.skills[id] = todayKey();
+  const st = { [BRANCHES[s.br].stat]: CONFIG.stat.skillNode };
+  const xp = gainXp(CONFIG.xp.skillNode, st);
+  FX.notify('reward', 'SKILL MASTERED', [s.n, '+' + xp + ' XP' + statLine(st), 'A shadow answers the call.']);
+  FX.arise(s.n);
+  return true;
+}
+/* ---- weekly dungeons ---- */
+function weekBosses() {
+  const wk = weekKey(todayKey());
+  if (!state.weekly[wk]) { state.weekly[wk] = {}; for (const b of WEEKLY_BOSSES) state.weekly[wk][b.id] = { tasks: b.tasks.map(() => false), entered: false, defeated: false }; }
+  return state.weekly[wk];
+}
+function strikeBoss(bid, i) {
+  const b = WEEKLY_BOSSES.find(x => x.id === bid), s = weekBosses()[bid];
+  if (!b || !s || !s.entered || s.defeated || s.tasks[i]) return;
+  s.tasks[i] = true; FX.sfx('hit'); FX.shake(0.5);
+  if (s.tasks.every(Boolean)) {
+    s.defeated = true; state.bossKills++;
+    const xp = gainXp(CONFIG.xp.weeklyBoss, b.stat);
+    let fz = false; if (b.freeze && state.freezes < CONFIG.freeze.max) { state.freezes++; fz = true; }
+    FX.bossDefeat(b.name, ['+' + xp + ' XP' + statLine(b.stat), fz ? 'Loot: Streak Freeze ×1' : (b.freeze ? 'Streak Freeze not dropped (inventory full)' : 'Loot: 1 shadow soldier'), 'Dungeons cleared: ' + state.bossKills]);
+  }
+}
+/* ---- tower floors ---- */
+const floorUnlocked = f => f.id === 1 || !!state.floors[f.id - 1];
+const floorConds = f => f.conds.map(c => { const v = c.v(); return { n: c.n, t: c.t, v, ok: v >= c.t }; });
+function defeatFloor(fid) {
+  const f = FLOORS.find(x => x.id === fid); if (!f || state.floors[fid] || !floorUnlocked(f) || !floorConds(f).every(c => c.ok)) return false;
+  state.floors[fid] = todayKey();
+  const xp = gainXp(CONFIG.xp.floorBoss * fid, { INT: 2, AGI: 2, STR: 2, SENSE: 2, VIT: 2 });
+  if (state.freezes < CONFIG.freeze.max) state.freezes++;
+  FX.floorClear(f, xp);
+  return true;
+}
+/* ---- achievements ---- */
+function checkAchievements() {
+  for (const a of ACHIEVEMENTS) {
+    if (state.ach[a.id]) continue;
+    let ok = false; try { ok = a.c(); } catch (e) { }
+    if (ok) { state.ach[a.id] = todayKey(); if (a.id !== 'weakest') FX.achievement(a); }
+  }
+}
+/* ---- analytics ---- */
+function weekStats(wk) {
+  const end = addDays(wk, 6), inW = d => d && d >= wk && d <= end;
+  let outreach = 0, cleared = 0, xp = 0;
+  for (let i = 0; i < 7; i++) { const k = addDays(wk, i); outreach += state.outreach[k] || 0; const r = state.days[k]; if (r) { if (r.completed) cleared++; xp += r.xp || 0; } }
+  return {
+    problems: state.dsa.filter(d => inW(d.date) && d.result !== 'fail' && counts(d)).length,
+    attempted: state.dsa.filter(d => inW(d.date)).length,
+    milestones: state.projects.reduce((s, p) => s + p.milestones.filter(m => m.done && inW(m.doneDate)).length, 0),
+    sd: state.sd.filter(s => inW(s.date)).length, mocks: state.mocks.filter(m => inW(m.date)).length,
+    outreach, cleared, xp,
+    bosses: state.weekly[wk] ? Object.values(state.weekly[wk]).filter(b => b.defeated).length : 0
+  };
+}
+/* Honest interview-readiness score (0–100). Weighted toward what interviews actually test. */
+function readiness() {
+  const R = CONFIG.readiness, solved = solvedList();
+  const mh = solved.filter(d => d.diff !== 'easy').length;
+  const recent = state.dsa.slice(-30), cleanRate = recent.length ? recent.filter(d => d.result === 'clean').length / recent.length : 0;
+  const pats = PATTERNS.filter(p => p !== 'Other'), ps = patternStats();
+  const strong = pats.filter(p => ps[p].n >= 6 && ps[p].clean / ps[p].n >= 0.6).length;
+  const ms = milestonesDone(), rd = state.projects.reduce((s, p) => s + readmeDone(p), 0);
+  const mk = state.mocks.length, avg = mockAvg(5);
+  let c28 = 0; for (let i = 0; i < 28; i++) { const r = state.days[addDays(todayKey(), -i)]; if (r && r.completed) c28++; }
+  const comps = [
+    { k: 'DSA volume', max: 20, v: 20 * Math.min(mh / R.dsaTarget, 1), tip: mh + ' / ' + R.dsaTarget + ' medium+hard solved', fix: 'Solve more mediums. Volume is the base of everything.' },
+    { k: 'DSA accuracy', max: 10, v: 10 * cleanRate * Math.min(recent.length / 30, 1), tip: Math.round(cleanRate * 100) + '% clean over last ' + recent.length, fix: 'Too many hints or fails. Slow down and drain the Mistake Queue.' },
+    { k: 'Pattern coverage', max: 15, v: 15 * strong / pats.length, tip: strong + ' / ' + pats.length + ' patterns strong (6+ solved, 60%+ clean)', fix: 'Open the pattern heatmap and attack the coldest cells.' },
+    { k: 'Projects', max: 15, v: 15 * Math.min((ms / R.milestoneTarget) * 0.6 + (rd / (README_ITEMS.length * 2)) * 0.4, 1), tip: ms + ' milestones, ' + rd + ' README items', fix: 'Ship milestones and finish the README checklist — diagram, demo, eval metrics.' },
+    { k: 'System design', max: 10, v: 10 * Math.min(state.sd.length / R.sdTarget, 1), tip: state.sd.length + ' / ' + R.sdTarget + ' topics written up', fix: 'Do one design write-up each weekend.' },
+    { k: 'Mock interviews', max: 20, v: 10 * Math.min(mk / R.mockTarget, 1) + 10 * Math.min(mk / 3, 1) * (avg / 10), tip: mk + ' mocks' + (mk ? ', last-5 avg ' + avg.toFixed(1) + '/10' : ''), fix: 'Nothing predicts interviews like mocks. Book one this week.' },
+    { k: 'Consistency', max: 10, v: 10 * c28 / 28, tip: c28 + ' / 28 recent days cleared', fix: 'Protect the streak. Even a minimum day counts.' }
+  ];
+  const score = Math.round(comps.reduce((s, c) => s + c.v, 0));
+  const worst = comps.slice().sort((a, b) => a.v / a.max - b.v / b.max)[0];
+  const verdict = score < 25 ? 'Not interview-ready yet. That is expected early — keep clearing daily quests.' : score < 50 ? 'Foundations forming. You would struggle in a ₹20 LPA loop today.' : score < 70 ? 'Competitive for ₹15–20 LPA loops. Close the weakest area before applying wide.' : score < 85 ? 'Ready for ₹20–30 LPA loops. Apply with referrals now.' : 'Strong. ₹30 LPA+ loops are realistic — keep mocks continuous.';
+  const band = score < 55 ? state.player.ctc + (20 - state.player.ctc) * score / 55 : score < 75 ? 20 + 10 * (score - 55) / 20 : 30 + 20 * (score - 75) / 25;
+  return { score, comps, worst, verdict, band: Math.round(band * 10) / 10 };
+}
+
+/* ===================== SECTION 5b — ACCOUNT VERIFICATION =====================
+   Solves are checked against your real LeetCode / Codeforces accounts and
+   milestones against real GitHub commits. Codeforces + GitHub are called
+   directly; LeetCode goes through serve.py (it blocks direct browser calls).  */
+function verifyOn() { return !!state.settings.verify && !!(state.accounts.cf || state.accounts.lc); }
+function counts(d) { return !verifyOn() || !!d.verified; }          // what readiness, floors and weekly targets count
+const sync = { busy: false, last: 0, cf: null, lc: null, lcVia: '', lcGen: 0 };          // per-source status: null | 'ok' | error text
+const TAG_MAP = [
+  ['Sliding Window', /sliding window/], ['Two Pointers', /two pointers/], ['Binary Search', /binary search/], ['Backtracking', /backtracking/],
+  ['Dynamic Programming', /dynamic programming|^dp$/], ['Heaps', /heap|priority queue/], ['Linked List', /linked list/], ['Trees', /tree/],
+  ['Stack / Queue', /stack|queue/], ['Graphs', /graph|breadth-first|depth-first|dfs|bfs|union find|dsu|topological|shortest path/],
+  ['Greedy', /greedy/], ['Arrays & Hashing', /array|hash|string|prefix sum|sorting|implementation|matrix/]
+];
+function patternFromTags(tags) { const t = (tags || []).map(x => String(x).toLowerCase()); for (const [p, re] of TAG_MAP) if (t.some(x => re.test(x))) return p; return 'Other'; }
+const cleanHandle = v => { const m = String(v || '').trim().replace(/\/+$/, '').split('/').pop(); return /^[A-Za-z0-9_.-]{1,40}$/.test(m) ? m : ''; };
+
+async function fetchCF(handle) {
+  const r = await fetch('https://codeforces.com/api/user.status?handle=' + encodeURIComponent(handle) + '&from=1&count=200');
+  const j = await r.json(); if (j.status !== 'OK') throw new Error('Codeforces: ' + (j.comment || 'request failed'));
+  const fails = {}, subs = [], cons = {}, R = CONFIG.verify.cfRating;
+  for (const s of j.result.slice().reverse()) {
+    const p = s.problem || {}, pk = 'cf:' + (p.contestId || p.problemsetName || 'x') + '-' + p.index, pt = s.author && s.author.participantType;
+    const live = pt === 'CONTESTANT' || pt === 'VIRTUAL' || pt === 'OUT_OF_COMPETITION';
+    if (live && s.contestId) { if (!cons[s.contestId]) cons[s.contestId] = { ts: s.creationTimeSeconds, solved: {} }; }
+    if (s.verdict === 'OK') {
+      subs.push({ key: pk, src: 'Codeforces', name: p.name || pk, link: p.contestId ? 'https://codeforces.com/problemset/problem/' + p.contestId + '/' + p.index : '', diff: !p.rating || p.rating < R.medium ? (p.rating ? 'easy' : 'medium') : p.rating < R.hard ? 'medium' : 'hard', pattern: patternFromTags(p.tags), ts: s.creationTimeSeconds, fails: fails[pk] || 0 });
+      if (live && s.contestId) cons[s.contestId].solved[p.index] = 1;
+    } else if (s.verdict && s.verdict !== 'TESTING' && s.verdict !== 'COMPILATION_ERROR') fails[pk] = (fails[pk] || 0) + 1;
+  }
+  return { subs, contests: Object.keys(cons).map(id => ({ title: 'Codeforces contest ' + id, ts: cons[id].ts, solved: Object.keys(cons[id].solved).length })) };
+}
+async function fetchLC(user) {
+  const need = 'LeetCode sync needs the local helper ("python serve.py", then open http://localhost:8123) or the hosted GitHub job — see README.';
+  if (location.protocol === 'file:') throw new Error(need);
+  let j = null, err = '';
+  // 1) local helper (instant)  2) data file written by the scheduled GitHub job (up to ~30 min behind)
+  try { const r = await fetch('api/leetcode?user=' + encodeURIComponent(user), { cache: 'no-store' }); if (r.ok) { const x = await r.json(); if (x && x.ok) { j = x; sync.lcVia = 'helper'; } else err = (x && x.error) || ''; } } catch (e) { }
+  if (!j) {
+    const urls = [], gh = /^([\w-]+)\.github\.io$/i.exec(location.hostname);
+    if (gh) { const repo = location.pathname.split('/').filter(Boolean)[0] || gh[1] + '.github.io'; urls.push('https://raw.githubusercontent.com/' + gh[1] + '/' + repo + '/main/data/leetcode.json?t=' + Math.floor(Date.now() / 6e4)); }
+    urls.push('data/leetcode.json');
+    for (const u of urls) {
+      try { const r = await fetch(u, { cache: 'no-store' }); if (!r.ok) continue; const x = await r.json(); if (x && x.ok && String(x.user).toLowerCase() === user.toLowerCase() && (!j || x.generated > j.generated)) { j = x; sync.lcVia = 'job'; sync.lcGen = x.generated; } } catch (e) { }
+    }
+  }
+  if (!j) throw new Error(err || need);
+  const fails = {}, subs = [];
+  for (const s of j.submissions.slice().sort((a, b) => a.ts - b.ts)) {
+    const pk = 'lc:' + s.slug;
+    if (s.accepted) subs.push({ key: pk, src: 'LeetCode', name: s.title, link: 'https://leetcode.com/problems/' + s.slug + '/', diff: ['easy', 'medium', 'hard'].includes(s.difficulty) ? s.difficulty : 'medium', pattern: patternFromTags(s.tags), ts: s.ts, fails: fails[pk] || 0 });
+    else fails[pk] = (fails[pk] || 0) + 1;
+  }
+  return { subs, contests: (j.contests || []).map(c => ({ title: c.title, ts: c.ts, solved: null })) };
+}
+/* returns 'new' | 'adopted' | 'resolve' | null */
+function importVerified(s) {
+  const date = dkey(new Date(s.ts * 1000));
+  const ex = state.dsa.find(d => d.key === s.key);
+  if (ex) { if (s.ts > (ex.lastAc || 0)) { ex.lastAc = s.ts; return 'resolve'; } return null; }
+  if (date < state.startDate) return null;                      // history from before you started earns nothing
+  const man = state.dsa.find(d => !d.verified && d.name.trim().toLowerCase() === s.name.trim().toLowerCase());
+  if (man) {                                                    // a manual entry gets confirmed: pay the withheld XP
+    Object.assign(man, { verified: true, key: s.key, src: s.src, firstAc: s.ts, lastAc: s.ts, fails: s.fails, link: man.link || s.link });
+    if (man.half) { man.half = false; gainXp(CONFIG.xp.dsa[man.diff] * CONFIG.xp.resultMult[man.result] * (1 - CONFIG.verify.manualMult)); }
+    return 'adopted';
+  }
+  addDsa({ name: s.name, link: s.link, diff: s.diff, pattern: s.pattern, time: 0, result: 'clean', date, verified: true, key: s.key, src: s.src, firstAc: s.ts, lastAc: s.ts, fails: s.fails, quiet: true });
+  return 'new';
+}
+function claimContestEvidence() {
+  const wb = weekBosses().contest; if (!wb.evidence || !wb.entered || wb.defeated) return false;
+  let ch = false;
+  if (!wb.tasks[0]) { strikeBoss('contest', 0); ch = true; }
+  if (wb.evidence.solved >= 2 && !wb.tasks[1]) { strikeBoss('contest', 1); ch = true; }
+  return ch;
+}
+function applyContests(list) {
+  const d0 = parseKey(weekKey(todayKey())); d0.setHours(0, 0, 0, 0); const from = d0.getTime() / 1000;
+  const inW = list.filter(c => c.ts >= from); if (!inW.length) return false;
+  const best = inW.slice().sort((a, b) => (b.solved || 0) - (a.solved || 0))[0], wb = weekBosses().contest;
+  const changed = !wb.evidence || wb.evidence.solved !== (best.solved || 0);
+  wb.evidence = { title: best.title, solved: best.solved || 0 };
+  return claimContestEvidence() || changed;
+}
+async function syncAccounts(manual) {
+  if (sync.busy || !state.onboarded) return;
+  const a = state.accounts;
+  if (!a.cf && !a.lc) { if (manual) FX.notify('warn', 'NO ACCOUNTS LINKED', ['Add your LeetCode / Codeforces IDs in Settings.']); return; }
+  sync.busy = true; sync.last = Date.now(); paintSync();
+  const run = (fn, id, k) => id ? fn(id).then(r => { sync[k] = 'ok'; return r; }, e => { sync[k] = e.message || 'failed'; return null; }) : Promise.resolve(null);
+  const res = (await Promise.all([run(fetchLC, a.lc, 'lc'), run(fetchCF, a.cf, 'cf')])).filter(Boolean);
+  const subs = [].concat(...res.map(r => r.subs)).sort((x, y) => x.ts - y.ts), names = []; let re = 0, ad = 0;
+  const xp0 = state.totalXp;
+  for (const s of subs) { const r = importVerified(s); if (r === 'new') names.push(s.name); else if (r === 'resolve') re++; else if (r === 'adopted') ad++; }
+  const boss = applyContests([].concat(...res.map(r => r.contests)));
+  sync.busy = false; if (res.length) state.lastSync = Date.now();
+  const errs = [sync.lc, sync.cf].filter(s => s && s !== 'ok');
+  if (names.length || re || ad) FX.notify('reward', 'ACCOUNTS SYNCED', [names.length ? names.length + ' verified solve' + (names.length > 1 ? 's' : '') + ': ' + names.slice(0, 3).join(', ') + (names.length > 3 ? '…' : '') : '', ad ? ad + ' manual entr' + (ad > 1 ? 'ies' : 'y') + ' confirmed' : '', re ? re + ' re-submission' + (re > 1 ? 's' : '') + ' found' : '', state.totalXp > xp0 ? '+' + (state.totalXp - xp0) + ' XP' : '']);
+  else if (manual) FX.notify(errs.length ? 'warn' : 'info', errs.length ? 'SYNC PROBLEM' : 'NOTHING NEW', errs.length ? errs : ['No new accepted submissions found.', 'Solve and submit on LeetCode or Codeforces, then sync again.']);
+  if (names.length || re || ad || boss) commit(); else { save(); paintSync(); if (manual || ui.view === 'quests') render(); }
+}
+function paintSync() { const b = $('#syncBtn'); if (b) { b.classList.toggle('spin', sync.busy); const bad = [sync.lc, sync.cf].some(s => s && s !== 'ok'); b.style.color = bad ? 'var(--red)' : ''; } }
+function verifyPanel() {
+  const a = state.accounts;
+  if (!a.cf && !a.lc) return `<section class="win"><div class="row"><span class="dim">Verification is off — add your LeetCode / Codeforces IDs in Settings to have solves checked against your real accounts.</span><span class="sp"></span><button class="btn s" data-act="settings">Settings</button></div></section>`;
+  const st = (name, id, s) => !id ? '' : `<span class="tag ${s === 'ok' ? 'green' : s ? 'red' : ''}">${s === 'ok' ? '✔' : s ? '✕' : '…'} ${name}: ${esc(id)}</span>`;
+  const errs = [sync.lc, sync.cf].filter(s => s && s !== 'ok');
+  return `<section class="win">${winH('VERIFICATION', verifyOn() ? '<span class="tag green">STRICT</span>' : '<span class="tag gold">OFF</span>')}
+    <div class="row">${st('LeetCode', a.lc, sync.lc)}${st('Codeforces', a.cf, sync.cf)}<span class="dim xs mono">${state.lastSync ? 'last sync ' + new Date(state.lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'not synced yet'}</span><span class="sp"></span><button class="btn s" data-act="sync" ${sync.busy ? 'disabled' : ''}>⟳ ${sync.busy ? 'Syncing…' : 'Sync now (R)'}</button></div>
+    ${errs.map(e => `<div class="redt sm" style="margin-top:6px">${esc(e)}</div>`).join('')}
+    ${sync.lc === 'ok' && sync.lcVia === 'job' ? `<div class="dim xs mono" style="margin-top:6px">LeetCode data comes from the scheduled GitHub job (refreshes about every 30 min${sync.lcGen ? '; last new submission picked up ' + new Date(sync.lcGen * 1000).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}).</div>` : ''}
+    ${verifyOn() ? '<div class="dim sm" style="margin-top:6px">DSA quests complete only when a new accepted submission appears on your accounts. Solve, submit, then sync.</div>' : ''}</section>`;
+}
+/* GitHub: a milestone needs a real commit made after it was created (and after the last verified milestone) */
+async function verifyMilestone(p, m) {
+  const mt = /github\.com\/([\w.-]+)\/([\w.-]+)/i.exec(p.repo || '');
+  if (!mt) return { ok: false, msg: 'Add a public GitHub repo link to this project first (✎).' };
+  const base = m.created || new Date(parseKey(p.created || state.startDate).setHours(0, 0, 0, 0)).toISOString();
+  const since = p.lastVerified && p.lastVerified > base ? p.lastVerified : base;
+  try {
+    const r = await fetch('https://api.github.com/repos/' + mt[1] + '/' + mt[2].replace(/\.git$/, '') + '/commits?per_page=1&since=' + encodeURIComponent(since));
+    if (r.status === 404) return { ok: false, msg: 'Repo not found or private. It must be public to be verified.' };
+    if (r.status === 403 || r.status === 429) return { ok: false, msg: 'GitHub rate limit reached (60 checks/hour). Try again later.' };
+    const j = await r.json();
+    if (!Array.isArray(j) || !j.length) return { ok: false, msg: 'No commit found in the repo since ' + new Date(since).toLocaleString() + '. Push your work, then tick again.' };
+    const d = new Date(j[0].commit.committer.date); d.setSeconds(d.getSeconds() + 1);
+    return { ok: true, sha: j[0].sha.slice(0, 7), url: j[0].html_url, next: d.toISOString() };
+  } catch (e) { return { ok: false, msg: 'Could not reach GitHub. Check your connection and try again.' }; }
+}
+/* random audit: every few days one old "clean" solve comes back; failing it claws XP back */
+function pickAudit(t) {
+  const V = CONFIG.verify;
+  if (dayDiff(state.startDate, t) % V.auditEveryDays !== 0 || state.dsa.some(d => d.srs && d.srs.audit)) return;
+  const c = state.dsa.filter(d => d.result === 'clean' && !d.srs && !d.audited && dayDiff(d.date, t) >= V.auditAfterDays);
+  if (c.length) c[Math.abs(dayDiff('2024-01-01', t)) % c.length].srs = { stage: 0, due: t, audit: true };
+}
+function freshAc(d) { return !!(d.srs && d.lastAc && d.lastAc > (d.usedAc || d.firstAc || 0) && dkey(new Date(d.lastAc * 1000)) >= d.srs.due); }
+
+/* ===================== SECTION 6 — UI: SHELL ===================== */
+const ui = { view: 'hub', tab: 'dsa', skillSel: 'arrays', patFilter: '', weekOff: 0, lastView: null };
+const NAV = [
+  { id: 'hub', n: 'Hub', ic: '◈' }, { id: 'quests', n: 'Quests', ic: '❗' }, { id: 'dungeons', n: 'Dungeons', ic: '☠' },
+  { id: 'tower', n: 'Tower', ic: '▲' }, { id: 'skills', n: 'Skills', ic: '✦' }, { id: 'trackers', n: 'Trackers', ic: '≡' },
+  { id: 'pipeline', n: 'Pipeline', ic: '⇶' }, { id: 'analytics', n: 'Analytics', ic: '◔' }, { id: 'titles', n: 'Titles', ic: '♛' }
+];
+const bar = (pct, cls = '') => `<div class="bar ${cls}"><i style="width:${clamp(pct || 0, 0, 100).toFixed(1)}%"></i></div>`;
+const winH = (t, extra = '') => `<div class="win-h"><span class="t">${t}</span>${extra}</div>`;
+const linkOr = (name, url) => safeUrl(url) ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(name)} ↗</a>` : esc(name);
+
+function renderNav() {
+  const pen = penaltyActive();
+  $('#nav').innerHTML = (pen ? `<button class="nav-i alert ${ui.view === 'penalty' ? 'on' : ''}" data-act="go" data-v="penalty"><span class="ic">⚠</span>Penalty</button>` : '') +
+    NAV.map((n, i) => `<button class="nav-i ${ui.view === n.id ? 'on' : ''}" data-act="go" data-v="${n.id}" title="${n.n} (${i + 1})"><kbd>${i + 1}</kbd><span class="ic">${n.ic}</span>${n.n}</button>`).join('');
+}
+function renderHud() {
+  const li = levelInfo(), r = rank();
+  $('#hud').innerHTML = `<div class="hud-rank" title="${r.name}"><b>${r.id}</b></div>
+    <div class="hud-xp"><div class="lbl"><span>LV.${li.level} · ${esc(state.player.name)}</span><span>${li.into} / ${li.need} XP</span></div>${bar(li.into / li.need * 100)}</div>
+    <div class="hud-chip" title="Current streak">🔥 <b>${state.streak}</b></div>
+    <div class="hud-chip opt" title="Streak freezes held">❄ <b>${state.freezes}</b></div>
+    <div class="hud-chip opt" title="Energy">⚡ <b>${state.hp}</b></div>`;
+  $('#sndBtn').textContent = state.settings.sound ? '♪' : '✕';
+  $('#sndBtn').style.opacity = state.settings.sound ? 1 : 0.5;
+}
+function render() {
+  if (ui.view === 'penalty' && !penaltyActive()) ui.view = 'quests';
+  const v = $('#view'), same = ui.lastView === ui.view, sc = v.scrollTop;
+  v.classList.toggle('still', same);
+  document.body.classList.toggle('penalty', penaltyActive());
+  renderNav(); renderHud();
+  v.innerHTML = (VIEWS[ui.view] || VIEWS.hub)();
+  if (same) v.scrollTop = sc; else {
+    v.scrollTop = 0;
+    if (!RM()) { const fills = $$('.bar>i,.climb .fill', v); const ws = fills.map(f => f.style.width); fills.forEach(f => f.style.width = '0'); requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach((f, i) => f.style.width = ws[i]))); }
+  }
+  ui.lastView = ui.view;
+  (POST[ui.view] || (() => { }))(same);
+  updateCountdowns();
+}
+/* persist + re-render + sync 3D world after any state change */
+function commit() {
+  checkAchievements(); save(); render();
+  World.setArmy(armyCount()); World.setPenalty(penaltyActive());
+}
+function go(v) { if (ui.view === v) return; ui.view = v; FX.sfx('blip'); render(); }
+function updateCountdowns() {
+  const ms = msToMidnight();
+  $$('[data-cd]').forEach(e => e.textContent = hms(ms));
+}
+
+/* ---- modal + forms ---- */
+let formCb = null;
+function openModal(html) { $('#modalBody').innerHTML = html; $('#modal').classList.remove('hidden'); const f = $('#modalBody input,#modalBody select,#modalBody textarea'); if (f) setTimeout(() => f.focus(), 30); }
+function closeModal() { $('#modal').classList.add('hidden'); $('#modalBody').innerHTML = ''; formCb = null; }
+function openForm({ title, fields, submit = 'CONFIRM', note = '', onSubmit }) {
+  formCb = onSubmit;
+  const fh = fields.map(f => {
+    const a = `name="${f.k}" ${f.req ? 'required' : ''}`;
+    let inp;
+    if (f.type === 'select') inp = `<select ${a}>${f.opts.map(o => { const [val, lab] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(val)}" ${String(f.val) === String(val) ? 'selected' : ''}>${esc(lab)}</option>`; }).join('')}</select>`;
+    else if (f.type === 'textarea') inp = `<textarea ${a} rows="3" placeholder="${esc(f.ph || '')}">${esc(f.val || '')}</textarea>`;
+    else inp = `<input type="${f.type || 'text'}" ${a} value="${esc(f.val ?? '')}" placeholder="${esc(f.ph || '')}" ${f.min != null ? `min="${f.min}"` : ''} ${f.max != null ? `max="${f.max}"` : ''} ${f.step ? `step="${f.step}"` : ''} ${f.type === 'text' ? 'maxlength="140"' : ''}>`;
+    return `<label class="f ${f.full ? 'full' : ''}">${esc(f.label)}${inp}</label>`;
+  }).join('');
+  openModal(`${winH(title)}<form id="frm" class="form">${fh}${note ? `<div class="full dim sm">${note}</div>` : ''}<div class="full row"><span class="sp"></span><button type="button" class="btn ghost" data-act="closeModal">CANCEL</button><button class="btn pri">${submit}</button></div></form>`);
+}
+function confirmBox(title, msg, yes, onYes, danger) {
+  formCb = onYes;
+  openModal(`${winH(title)}<p style="line-height:1.5">${msg}</p><form id="frm" class="row" style="margin-top:16px"><span class="sp"></span><button type="button" class="btn ghost" data-act="closeModal">CANCEL</button><button class="btn ${danger ? 'red' : 'pri'}">${yes}</button></form>`);
+}
+
+/* ===================== SECTION 7 — UI: VIEWS ===================== */
+const VIEWS = {}, POST = {};
+function climbHtml() {
+  const R = readiness(), ctc = state.player.ctc, lo = Math.min(ctc, 3), hi = 50;
+  const pos = v => clamp((Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * 100, 0, 100);
+  return `<div class="climb" style="height:92px">
+    <div class="track"></div><div class="fill" style="width:${pos(R.band).toFixed(1)}%"></div>
+    ${CONFIG.salary.milestones.map(m => `<div class="mk ${ctc >= m ? 'hit' : ''}" style="left:${pos(m)}%">₹${m}L</div>`).join('')}
+    <div class="mk me" style="left:${clamp(pos(ctc), 6, 94)}%">NOW ₹${ctc}</div>
+    <div class="mk ghost" style="left:${clamp(pos(R.band), 10, 90)}%;top:66px">▲ readiness band ≈ ₹${R.band}</div>
+  </div><div class="dim xs">Bar = where your current readiness score (${R.score}/100) would plausibly land you. An estimate, not a promise.</div>`;
+}
+function questRow(q) {
+  const xpTag = q.type === 'dsa' ? 'XP by difficulty' : '+' + Math.round(q.xp * diffCfg().xp) + ' XP';
+  return `<div class="quest ${q.done ? 'done' : ''}">
+    <button class="chk ${q.done ? 'on' : ''}" data-act="quest" data-id="${q.id}" ${q.done ? 'disabled' : ''} aria-label="Complete quest">✓</button>
+    <div style="flex:1;min-width:0"><div class="qt">${esc(q.title)}</div><div class="qd">${esc(q.desc)}</div>
+      <div class="qmeta"><span class="tag">⏱ ${q.min} min</span><span class="tag gold">${xpTag}</span>${q.type === 'dsa' && !q.done ? `<span class="tag vio">${verifyOn() ? 'tick = sync your accounts' : 'tick = log the problem'}</span>` : ''}
+      ${q.done ? '' : `<button class="btn s" data-act="focus" data-id="${q.id}">▶ Focus</button>`}</div></div></div>`;
+}
+function todaySummary() {
+  const rec = dayRec(), n = rec.quests.length, d = rec.quests.filter(q => q.done).length;
+  return { n, d, pct: n ? d / n * 100 : 0, done: !!rec.completed, mins: rec.quests.filter(q => !q.done).reduce((s, q) => s + q.min, 0) };
+}
+
+VIEWS.hub = () => {
+  const li = levelInfo(), r = rank(), nr = CONFIG.ranks[state.rankIdx + 1], ts = todaySummary(), due = srsDue().length;
+  const wb = Object.values(weekBosses()).filter(b => !b.defeated).length;
+  return `<div class="vwrap hub">
+    <section class="win">
+      ${winH('STATUS')}
+      <div class="row" style="align-items:flex-start;flex-wrap:nowrap">
+        <div style="flex:1;min-width:0"><div class="pname">${esc(state.player.name)}</div><div class="ptitle">« ${esc((ACH_BY[state.player.title] || ACH_BY.weakest).n)} »</div></div>
+        <div style="text-align:right"><div class="big">${r.id}</div><div class="dim xs mono">${r.name}</div></div>
+      </div>
+      <div class="kv"><span>LEVEL <b>${li.level}</b></span><b>${li.into} / ${li.need} XP</b></div>${bar(li.into / li.need * 100)}
+      <div class="kv"><span>ENERGY</span><b>${state.hp} / ${CONFIG.energy.max}</b></div>${bar(state.hp, 'hp')}
+      <div class="kv"><span>STREAK <b>${state.streak}</b> · BEST <b>${state.bestStreak}</b> · FREEZE <b>${state.freezes}</b></span><b>${state.totalXp} total XP</b></div>
+      ${nr ? `<div class="dim xs mono" style="margin-top:4px">Next rank ${nr.id}: ${nr.xp} XP + best streak ${nr.streak}</div>` : ''}
+      <canvas class="radar" id="radar" width="300" height="300"></canvas>
+      <div class="statgrid">${STATS.map(s => `<div class="statbox" title="${STAT_DESC[s]}"><b>${Math.floor(state.stats[s])}</b><span>${s}</span></div>`).join('')}</div>
+    </section>
+    <div class="hub-mid"><div class="army-badge" title="Skills mastered + milestones shipped + bosses defeated">SHADOW ARMY<b>${armyCount()}</b></div></div>
+    <div class="col">
+      <section class="win">
+        ${winH('DAILY QUEST', ts.done ? '<span class="tag green">CLEARED</span>' : `<span class="count" data-cd></span>`)}
+        <div class="kv" style="margin-top:0"><span>${ts.d} / ${ts.n} objectives</span><b>${ts.done ? 'Rest. Return tomorrow.' : '~' + ts.mins + ' min left'}</b></div>${bar(ts.pct)}
+        <div style="margin-top:10px">${dayRec().quests.map(q => `<div class="task ${q.done ? 'on' : ''}"><span class="${q.done ? 'greent' : 'acc'}">${q.done ? '■' : '□'}</span>${esc(q.title)}</div>`).join('')}</div>
+        <div class="row" style="margin-top:10px"><button class="btn pri" data-act="go" data-v="quests">Open quests</button>
+          ${due ? `<span class="tag red">${due} mistake quest${due > 1 ? 's' : ''} due</span>` : ''}${wb ? `<span class="tag vio">${wb} boss${wb > 1 ? 'es' : ''} alive</span>` : '<span class="tag green">dungeons cleared</span>'}</div>
+      </section>
+      <section class="win">${winH('SALARY CLIMB')}${climbHtml()}</section>
+    </div>
+  </div>`;
+};
+POST.hub = same => drawRadar(same);
+
+VIEWS.quests = () => {
+  const rec = dayRec(), ts = todaySummary(), due = srsDue(), wk = isWeekend(todayKey());
+  return `<div class="vwrap">
+    ${penaltyActive() ? `<section class="win"><div class="row"><span class="redt" style="font-family:var(--fh);letter-spacing:.2em">⚠ PENALTY QUEST ACTIVE</span><span class="sp"></span><button class="btn red" data-act="go" data-v="penalty">Enter penalty zone</button></div></section>` : ''}
+    ${verifyPanel()}
+    <section class="win">
+      ${winH('DAILY QUEST — ' + (wk ? 'WEEKEND RAID' : 'THE GRIND BEFORE THE GATE'), ts.done ? '<span class="tag green">CLEARED</span>' : '')}
+      <div class="row" style="margin-bottom:10px"><span class="dim mono sm">${parseKey(todayKey()).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</span><span class="sp"></span><span class="dim sm">Resets in</span><span class="count" data-cd></span></div>
+      ${bar(ts.pct)}<div style="height:12px"></div>
+      ${rec.quests.map(questRow).join('')}
+      ${ts.done ? `<div class="warnline" style="color:var(--green);border-color:rgba(77,255,176,.4);background:rgba(77,255,176,.05)">[QUEST COMPLETE] Streak ${state.streak}. The System acknowledges your effort.</div>`
+      : `<div class="warnline">WARNING — Failing to complete the Daily Quest breaks your streak, costs ${Math.round(CONFIG.penalty.xpLoss * diffCfg().penalty)} XP and ${Math.round(CONFIG.penalty.hpLoss * diffCfg().penalty)} Energy, and summons a Penalty Quest.${state.freezes ? ' (A Streak Freeze will absorb one miss.)' : ''}</div>`}
+    </section>
+    <section class="win">
+      ${winH('MISTAKE QUESTS', `<span class="tag ${due.length ? 'red' : 'green'}">${due.length} due</span>`)}
+      ${due.length ? due.map(mistakeRow).join('') : '<div class="empty">No mistakes due today. Problems you fail or need a hint on resurface here after 1, 3, 7 and 14 days.</div>'}
+    </section>
+  </div>`;
+};
+function mistakeRow(d) {
+  const strict = verifyOn() && d.verified, ok = !strict || freshAc(d), au = !!d.srs.audit, dis = ok ? '' : 'disabled';
+  return `<div class="quest"><div style="flex:1;min-width:0"><div class="qt">${linkOr(d.name, d.link)}</div>
+    <div class="qmeta">${au ? '<span class="tag red">AUDIT</span>' : ''}<span class="tag">${esc(d.pattern)}</span><span class="tag ${d.diff === 'hard' ? 'red' : d.diff === 'medium' ? 'gold' : 'green'}">${d.diff}</span>${au ? '' : `<span class="tag vio">stage ${d.srs.stage + 1}/${CONFIG.srsDays.length}</span>`}<span class="dim xs">first seen ${fmtDay(d.date)}</span>
+      ${strict ? (ok ? '<span class="tag green">✔ fresh accepted submission found</span>' : `<span class="tag gold">re-submit on ${esc(d.src)}, then sync</span>`) : ''}</div>
+    ${au ? `<div class="dim sm" style="margin-top:6px">Random audit of a solve you logged as clean. Fail it and ${Math.round(CONFIG.verify.auditClawback * 100)}% of its XP is clawed back.</div>` : ''}
+    <div class="row" style="margin-top:8px"><span class="dim sm">Re-solve from scratch, then:</span><button class="btn s" data-act="srs" data-id="${d.id}" data-r="clean" ${dis}>Clean</button><button class="btn s" data-act="srs" data-id="${d.id}" data-r="hint" ${dis}>Needed hint</button><button class="btn s red" data-act="srs" data-id="${d.id}" data-r="fail">Failed</button>${strict && !ok ? '<button class="btn s" data-act="sync">⟳ Sync</button>' : ''}</div></div></div>`;
+}
+
+VIEWS.penalty = () => {
+  const p = dayRec().penalty; const left = p.tasks.filter(t => !t).length;
+  return `<div class="vwrap" style="max-width:820px">
+    <section class="win">
+      ${winH('PENALTY ZONE')}
+      <p class="redt mono" style="line-height:1.5">You failed to complete the Daily Quest. You have been transferred to the Penalty Zone.<br>Survive until the timer ends — or clear the Penalty Quest to leave now.</p>
+      <div class="pz-count" data-cd></div>
+      <div class="dim xs mono" style="text-align:center;margin-bottom:12px">TIME REMAINING · uncleared penalties return tomorrow with −${CONFIG.penalty.failHp} Energy</div>
+      ${bar((1 - left / p.tasks.length) * 100, 'boss')}
+      <div style="margin-top:12px">${p.tasks.map((t, i) => `<div class="quest ${t ? 'done' : ''}"><button class="chk ${t ? 'on' : ''}" data-act="pen" data-i="${i}" ${t ? 'disabled' : ''}>✓</button><div class="qt" style="font-size:16px">${esc(PENALTY_TASKS[i])}</div></div>`).join('')}</div>
+      <div class="row" style="margin-top:12px"><span class="tag gold">+${Math.round(CONFIG.xp.penaltyClear * diffCfg().xp)} XP</span><span class="tag green">+${CONFIG.energy.penaltyClear} Energy</span><span class="sp"></span><button class="btn" data-act="go" data-v="quests">Today's daily quest still stands →</button></div>
+    </section></div>`;
+};
+
+VIEWS.dungeons = () => {
+  const wk = weekKey(todayKey()), ws = weekBosses(), left = 7 - dayDiff(wk, todayKey());
+  return `<div class="vwrap">
+    <section class="win">${winH('WEEKLY DUNGEONS')}<div class="row"><span class="mono sm dim">Week of ${fmtDay(wk)} · gates close in ${left} day${left > 1 ? 's' : ''}</span><span class="sp"></span><span class="tag">❄ Streak Freeze ${state.freezes}/${CONFIG.freeze.max}</span><span class="tag vio">Total clears ${state.bossKills}</span></div>
+    <div class="dim sm" style="margin-top:6px">Each boss loses HP as you finish its sub-tasks. A Streak Freeze automatically absorbs one missed day.</div></section>
+    <div class="grid2">${WEEKLY_BOSSES.map(b => {
+      const s = ws[b.id], done = s.tasks.filter(Boolean).length, hp = (1 - done / b.tasks.length) * 100;
+      return `<section class="win boss ${s.defeated ? 'dead' : ''}">
+        <div class="row" style="flex-wrap:nowrap"><div class="boss-sig">${b.sig}</div><div style="flex:1;min-width:0"><div class="bn">${b.name}</div><div class="dim sm">${b.kind}</div></div>${s.defeated ? '<span class="tag green">DEFEATED</span>' : `<span class="tag red">HP ${Math.round(hp)}%</span>`}</div>
+        ${bar(hp, 'boss')}
+        ${b.id === 'contest' && s.evidence ? `<div class="greent sm">✔ Verified: ${esc(s.evidence.title)}${s.evidence.solved ? ' — ' + s.evidence.solved + ' solved in contest' : ''}</div>` : b.id === 'contest' && verifyOn() ? '<div class="dim sm">Strikes 1–2 land automatically when a sync finds contest participation this week.</div>' : ''}
+        ${!s.entered ? `<div class="dim sm">Loot: +${Math.round(CONFIG.xp.weeklyBoss * diffCfg().xp)} XP${statLine(b.stat)} · 1 shadow${b.freeze ? ' · Streak Freeze' : ''}</div><button class="btn pri" data-act="enterBoss" data-id="${b.id}">Enter dungeon</button>`
+        : `<div>${b.tasks.map((t, i) => `<div class="task ${s.tasks[i] ? 'on' : ''}"><button class="chk ${s.tasks[i] ? 'on' : ''}" data-act="strike" data-id="${b.id}" data-i="${i}" ${s.tasks[i] || s.defeated ? 'disabled' : ''}>✓</button><span>${esc(t)}</span></div>`).join('')}</div>`}
+      </section>`; }).join('')}</div>
+  </div>`;
+};
+
+VIEWS.tower = () => {
+  const cur = currentFloor(), mo = monthNo();
+  return `<div class="vwrap" style="max-width:980px">
+    <section class="win">${winH('THE TOWER — STORY MODE')}<div class="row"><span class="mono sm dim">Day ${dayDiff(state.startDate, todayKey()) + 1} · Month ${mo} of the climb</span><span class="sp"></span><span class="tag">Current floor ${['I', 'II', 'III'][cur - 1]}</span></div></section>
+    ${FLOORS.slice().reverse().map(f => {
+      const un = floorUnlocked(f), cl = !!state.floors[f.id], cs = floorConds(f), ok = cs.filter(c => c.ok).length, hp = (1 - ok / cs.length) * 100;
+      return `<section class="win floor ${cl ? 'cleared' : un ? '' : 'locked'}">
+        <div class="row" style="flex-wrap:nowrap;align-items:flex-start"><div class="fnum">${['I', 'II', 'III'][f.id - 1]}</div>
+          <div style="flex:1;min-width:0"><div class="bn" style="font-family:var(--fh);font-weight:900;letter-spacing:.08em">${f.name}</div><div class="dim sm mono">${f.months}</div></div>
+          ${cl ? `<span class="tag gold">CLEARED ${fmtDay(state.floors[f.id])}</span>` : un ? '<span class="tag">ACTIVE</span>' : '<span class="tag red">LOCKED</span>'}</div>
+        <div class="chips" style="margin:10px 0">${f.focus.map(x => `<span class="tag vio">${esc(x)}</span>`).join('')}</div>
+        <h3 class="hh">Skill nodes on this floor</h3>
+        <div class="chips">${SKILLS.filter(s => s.fl === f.id).map(s => `<button class="chip ${state.skills[s.id] ? 'ms' : skillAvail(s) ? 'av' : ''}" data-act="skillGo" data-id="${s.id}">${esc(s.n)}</button>`).join('')}</div>
+        <h3 class="hh" style="margin-top:14px">Floor boss — ${f.sig} ${f.boss}</h3>
+        ${bar(cl ? 0 : hp, 'boss')}
+        ${cs.map(c => `<div class="cond"><div class="kv"><span class="${c.ok ? 'greent' : ''}">${c.ok ? '■' : '□'} ${esc(c.n)}</span><b>${c.v} / ${c.t}</b></div>${bar(c.v / c.t * 100, 'thin')}</div>`).join('')}
+        ${cl ? '' : `<div class="row" style="margin-top:10px"><button class="btn pri" data-act="floorBoss" data-id="${f.id}" ${un && ok === cs.length ? '' : 'disabled'}>Deliver the final blow</button><span class="dim sm">${!un ? 'Clear the floor below first.' : ok === cs.length ? 'All conditions met.' : 'Boss HP falls as conditions are met — they are measured from your real logs.'}</span></div>`}
+      </section>`; }).join('')}
+  </div>`;
+};
+
+VIEWS.skills = () => `<div class="vwrap skills">
+  <section class="win" style="padding:6px"><canvas id="skillCv"></canvas></section>
+  <section class="win" id="skillSide"></section></div>`;
+function renderSkillSide() {
+  const el = $('#skillSide'); if (!el) return;
+  const s = SKILL_BY[ui.skillSel] || SKILLS[0], b = BRANCHES[s.br], ms = state.skills[s.id], av = skillAvail(s);
+  el.innerHTML = `${winH('SKILL NODE')}
+    <div class="pname" style="font-size:18px">${esc(s.n)}</div>
+    <div class="row" style="margin:8px 0"><span class="tag" style="color:${b.col};border-color:${b.col}">${b.n}</span><span class="tag">${b.stat} +${CONFIG.stat.skillNode}</span><span class="tag vio">Floor ${['I', 'II', 'III'][s.fl - 1]}</span></div>
+    <p class="qd" style="font-size:15px">${esc(s.desc)}</p>
+    ${s.req.length ? `<div class="dim sm" style="margin-top:8px">Requires: ${s.req.map(r => `<span class="${state.skills[r] ? 'greent' : 'redt'}">${esc(SKILL_BY[r].n)}</span>`).join(', ')}</div>` : ''}
+    <div class="row" style="margin-top:12px">${ms ? `<span class="tag green">MASTERED ${fmtDay(ms)}</span>` : `<button class="btn pri" data-act="master" data-id="${s.id}" ${av ? '' : 'disabled'}>Master — ARISE</button><span class="dim xs">${av ? '+' + Math.round(CONFIG.xp.skillNode * diffCfg().xp) + ' XP · spawns a shadow' : 'Locked: master prerequisites first'}</span>`}</div>
+    <div style="margin-top:14px">${BR_ORDER.map(k => `<h3 class="hh" style="color:${BRANCHES[k].col}">${BRANCHES[k].n} · ${skillsIn(k)}/${SKILLS.filter(x => x.br === k).length}</h3><div class="chips" style="margin-bottom:8px">${SKILLS.filter(x => x.br === k).map(x => `<button class="chip ${state.skills[x.id] ? 'ms' : skillAvail(x) ? 'av' : ''} ${x.id === s.id ? 'sel' : ''}" data-act="skillSel" data-id="${x.id}">${esc(x.n)}</button>`).join('')}</div>`).join('')}</div>`;
+}
+POST.skills = () => { renderSkillSide(); startSkillCanvas(); };
+
+VIEWS.trackers = () => {
+  const tabs = [['dsa', 'DSA log'], ['srs', 'Mistake queue'], ['proj', 'Projects'], ['mock', 'Mocks'], ['sd', 'System design']];
+  return `<div class="vwrap"><div class="row">${tabs.map(t => `<button class="btn ${ui.tab === t[0] ? 'on' : ''}" data-act="tab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>${TABS[ui.tab]()}</div>`;
+};
+const TABS = {};
+TABS.dsa = () => {
+  const ps = patternStats(), list = state.dsa.filter(d => !ui.patFilter || d.pattern === ui.patFilter).slice().reverse();
+  const ws = weekStats(weekKey(todayKey()));
+  return `<section class="win">${winH('PATTERN HEATMAP', '<span class="dim xs" style="letter-spacing:0;font-family:var(--fb)">red = weak · blue = strong · click to filter</span>')}
+    <div class="heat">${PATTERNS.map(p => {
+      const s = ps[p], str = s.n ? Math.min(s.n / 8, 1) * (s.clean + 0.5 * s.hint) / s.n : 0;
+      const bg = s.n ? `hsla(${Math.round(str * 210)},85%,${28 + str * 14}%,.55)` : 'rgba(4,10,24,.4)';
+      return `<button class="hcell ${ui.patFilter === p ? 'sel' : ''}" style="background:${bg};text-align:left;color:inherit" data-act="patFilter" data-p="${esc(p)}">${esc(p)}<b>${s.n ? s.n + ' · ' + Math.round(s.clean / s.n * 100) + '% clean' : 'untouched'}</b></button>`; }).join('')}</div></section>
+  <section class="win">${winH('DSA LOG', `<span class="tag">${solvedList().length} solved</span><span class="tag ${ws.problems >= CONFIG.weekly.problems[0] ? 'green' : 'gold'}">this week ${ws.problems}/${CONFIG.weekly.problems.join('–')}</span>`)}
+    <div class="row" style="margin-bottom:10px">${verifyOn() ? '<button class="btn pri" data-act="sync">⟳ Sync accounts (R)</button><button class="btn" data-act="newDsa">+ Log manually — half XP (N)</button>' : '<button class="btn pri" data-act="newDsa">+ Log problem (N)</button>'}${ui.patFilter ? `<span class="tag gold">${esc(ui.patFilter)}</span><button class="btn s ghost" data-act="patFilter" data-p="">clear filter</button>` : ''}</div>
+    ${list.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>Date</th><th>Problem</th><th>Diff</th><th>Pattern</th><th>Min</th><th>Result</th><th>Proof</th><th></th></tr></thead><tbody>${list.slice(0, 150).map(d => `<tr><td class="mono dim">${fmtDay(d.date)}</td><td>${linkOr(d.name, d.link)}</td><td><span class="tag ${d.diff === 'hard' ? 'red' : d.diff === 'medium' ? 'gold' : 'green'}">${d.diff}</span></td><td>${esc(d.pattern)}</td><td class="mono">${d.time || '—'}</td><td><span class="tag ${d.result === 'clean' ? 'green' : d.result === 'hint' ? 'gold' : 'red'}">${{ clean: 'clean', hint: 'hint', fail: 'failed' }[d.result]}</span>${d.result === 'clean' && !d.srs ? ` <button class="btn s ghost" data-act="markHint" data-id="${d.id}" title="Be honest: move it to the mistake queue">needed hint?</button>` : ''}</td><td>${d.verified ? `<span class="tag green">✔ ${esc(d.src)}</span>${d.fails ? ` <span class="dim xs">${d.fails} failed tr${d.fails > 1 ? 'ies' : 'y'}</span>` : ''}` : '<span class="tag gold">unverified</span>'}</td><td><button class="btn s ghost" data-act="delDsa" data-id="${d.id}" title="Delete">✕</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No problems logged yet. Every solve you log feeds XP, the heatmap, the mistake queue and your readiness score.</div>'}
+  </section>`;
+};
+TABS.srs = () => {
+  const all = srsAll(), t = todayKey();
+  return `<section class="win">${winH('SPACED-REPETITION QUEUE', `<span class="tag">${all.length} queued</span><span class="tag green">${state.srsGraduated} graduated</span>`)}
+    <div class="dim sm" style="margin-bottom:10px">Failed or hinted problems come back after ${CONFIG.srsDays.join(', ')} days. A clean re-solve advances a stage; anything else resets it.</div>
+    ${all.length ? all.map(d => d.srs.due <= t ? mistakeRow(d) : `<div class="quest"><div style="flex:1"><div class="qt" style="font-size:15px">${linkOr(d.name, d.link)}</div><div class="qmeta"><span class="tag">${esc(d.pattern)}</span><span class="tag vio">stage ${d.srs.stage + 1}/${CONFIG.srsDays.length}</span><span class="dim xs mono">due ${fmtDay(d.srs.due)} (in ${dayDiff(t, d.srs.due)}d)</span></div></div></div>`).join('') : '<div class="empty">Queue empty. Log a problem as "needed hint" or "failed" and it will appear here.</div>'}
+  </section>`;
+};
+TABS.proj = () => `<section class="win">${winH('PROJECT TRACKER', `<span class="tag">${milestonesDone()} milestones shipped</span>`)}
+  <div class="row" style="margin-bottom:12px"><button class="btn pri" data-act="newProj">+ New project</button></div>
+  ${state.projects.length ? `<div class="grid2">${state.projects.map(p => {
+    const md = p.milestones.filter(m => m.done).length, rd = readmeDone(p);
+    return `<div class="pcard"><div class="row" style="flex-wrap:nowrap"><b style="font-size:18px;flex:1;min-width:0">${esc(p.name)}</b><button class="btn s ghost" data-act="editProj" data-id="${p.id}">✎</button><button class="btn s ghost" data-act="delProj" data-id="${p.id}">✕</button></div>
+      <div class="sm">${p.repo ? linkOr('GitHub repo', p.repo) : '<span class="dim">No repo link yet — add one with ✎</span>'}</div>
+      <div class="kv"><span>MILESTONES</span><b>${md} / ${p.milestones.length}</b></div>${bar(p.milestones.length ? md / p.milestones.length * 100 : 0, 'thin')}
+      ${p.milestones.map(m => `<div class="task ${m.done ? 'on' : ''}"><button class="chk ${m.done ? 'on' : ''}" style="cursor:pointer" data-act="ms" data-p="${p.id}" data-id="${m.id}">✓</button><span style="flex:1">${esc(m.t)}${m.done && m.commitUrl ? ` <a class="xs" href="${esc(m.commitUrl)}" target="_blank" rel="noopener noreferrer">✔ commit ${esc(m.commit)}</a>` : ''}</span><button class="btn s ghost" data-act="delMs" data-p="${p.id}" data-id="${m.id}">✕</button></div>`).join('')}
+      <button class="btn s" data-act="newMs" data-id="${p.id}" style="margin-top:6px">+ Milestone</button>
+      <div class="kv" style="margin-top:12px"><span>README CHECKLIST</span><b>${rd} / ${README_ITEMS.length}</b></div>${bar(rd / README_ITEMS.length * 100, 'thin gold')}
+      ${README_ITEMS.map(r => `<div class="task ${p.readme[r.k] ? 'on' : ''}"><button class="chk ${p.readme[r.k] ? 'on' : ''}" style="cursor:pointer" data-act="readme" data-p="${p.id}" data-k="${r.k}">✓</button><span>${r.n}</span></div>`).join('')}
+    </div>`; }).join('')}</div>` : '<div class="empty">No projects yet. Start with the RAG project — each shipped milestone is +' + CONFIG.xp.projectMilestone + ' XP and one shadow soldier.</div>'}
+</section>`;
+TABS.mock = () => `<section class="win">${winH('MOCK INTERVIEW LOG', `<span class="tag">${state.mocks.length} mocks</span>${state.mocks.length ? `<span class="tag gold">last-5 avg ${mockAvg(5).toFixed(1)}/10</span>` : ''}`)}
+  <div class="row" style="margin-bottom:12px"><button class="btn pri" data-act="newMock">+ Log mock</button></div>
+  ${state.mocks.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>Date</th><th>Type</th><th>Score</th><th>With</th><th>Feedback / fixes</th><th></th></tr></thead><tbody>${state.mocks.slice().reverse().map(m => `<tr><td class="mono dim">${fmtDay(m.date)}</td><td>${esc(m.type)}</td><td><span class="tag ${m.score >= 7 ? 'green' : m.score >= 5 ? 'gold' : 'red'}">${m.score}/10</span></td><td>${esc(m.by)}</td><td style="white-space:pre-wrap;min-width:200px">${esc(m.notes)}</td><td><button class="btn s ghost" data-act="delMock" data-id="${m.id}">✕</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No mocks logged. Mocks carry 20% of your readiness score — begin them in month 3 at the latest.</div>'}
+</section>`;
+TABS.sd = () => `<section class="win">${winH('SYSTEM DESIGN LOG', `<span class="tag">${state.sd.length} topics</span>`)}
+  <div class="row" style="margin-bottom:12px"><button class="btn pri" data-act="newSd">+ Log topic</button></div>
+  ${state.sd.length ? `<div class="tblwrap"><table class="tbl"><thead><tr><th>Date</th><th>Topic</th><th>Kind</th><th>Notes</th><th></th></tr></thead><tbody>${state.sd.slice().reverse().map(s => `<tr><td class="mono dim">${fmtDay(s.date)}</td><td>${esc(s.topic)}</td><td><span class="tag">${esc(s.kind)}</span></td><td style="white-space:pre-wrap;min-width:200px">${esc(s.notes)}</td><td><button class="btn s ghost" data-act="delSd" data-id="${s.id}">✕</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Log each HLD / LLD / fundamentals topic you can explain without notes.</div>'}
+</section>`;
+
+VIEWS.pipeline = () => {
+  const ws = weekStats(weekKey(todayKey())), g = CONFIG.weekly.outreach, mo = monthNo(), active = mo >= CONFIG.weekly.outreachFromMonth;
+  return `<div class="vwrap">
+    <div class="grid2">
+      <section class="win">${winH('SALARY TARGET')}${climbHtml()}</section>
+      <section class="win">${winH('WEEKLY OUTREACH', `<span class="tag ${ws.outreach >= g[0] ? 'green' : 'gold'}">${ws.outreach} / ${g[0]}–${g[1]}</span>`)}
+        ${bar(ws.outreach / g[1] * 100, 'gold')}
+        <div class="dim sm" style="margin:8px 0">${active ? 'Goal is live: ' + g[0] + '–' + g[1] + ' referral or application messages every week.' : 'Goal goes live in month ' + CONFIG.weekly.outreachFromMonth + ' (you are in month ' + mo + '). Logging early still counts.'} Moving a card to “Referral asked” or “Applied” logs one automatically.</div>
+        <div class="row"><button class="btn" data-act="outreach">+1 message sent</button><span class="dim sm mono">${outreachTotal()} total</span></div>
+      </section>
+    </div>
+    <section class="win">${winH('JOB PIPELINE', `<span class="tag">${state.jobs.length} companies</span>`)}
+      <div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="newJob">+ Add company</button><span class="dim sm">Drag cards between columns, or use ◀ ▶.</span></div>
+      <div class="kan">${STAGES.map((s, si) => {
+        const js = state.jobs.filter(j => j.stage === s.id);
+        return `<div class="kcol" data-stage="${s.id}"><h4><span>${s.n}</span><span class="dim">${js.length}</span></h4>${js.map(j => `<div class="kcard" draggable="true" data-job="${j.id}"><b>${esc(j.company)}</b>${j.role ? `<div class="dim sm">${esc(j.role)}</div>` : ''}<div class="row"><span class="tag vio">${esc(j.tier)}</span>${j.ctc ? `<span class="tag gold">₹${j.ctc} LPA</span>` : ''}${j.link ? linkOr('link', j.link) : ''}</div>${j.notes ? `<div class="dim xs" style="margin-top:4px;white-space:pre-wrap">${esc(j.notes)}</div>` : ''}
+          <div class="row"><button class="btn s" data-act="jobMove" data-id="${j.id}" data-d="-1" ${si === 0 ? 'disabled' : ''} aria-label="Move back">◀</button><button class="btn s" data-act="jobMove" data-id="${j.id}" data-d="1" ${si === STAGES.length - 1 ? 'disabled' : ''} aria-label="Move forward">▶</button><span class="sp"></span><button class="btn s ghost" data-act="editJob" data-id="${j.id}">✎</button><button class="btn s ghost" data-act="delJob" data-id="${j.id}">✕</button></div></div>`).join('')}</div>`; }).join('')}</div>
+    </section></div>`;
+};
+
+VIEWS.analytics = () => {
+  const R = readiness(), wk = addDays(weekKey(todayKey()), ui.weekOff * 7), ws = weekStats(wk), P = CONFIG.weekly.problems;
+  const col = R.score < 40 ? '#ff3b4e' : R.score < 70 ? '#ffc857' : '#4dffb0';
+  const row = (n, v, t, pct) => `<div class="cond"><div class="kv"><span>${n}</span><b>${v}${t ? ' / ' + t : ''}</b></div>${bar(pct, 'thin')}</div>`;
+  // calendar: 20 weeks ending this week
+  const start = addDays(weekKey(todayKey()), -19 * 7), t = todayKey(); let cal = '';
+  for (let i = 0; i < 140; i++) { const k = addDays(start, i), r = state.days[k]; const c = k > t ? 'cx' : !r ? '' : r.completed ? 'c2' : r.frozen ? 'cf' : r.missed ? 'cm' : r.xp > 0 ? 'c1' : ''; cal += `<i class="${c} ${k === t ? 'ct' : ''}" title="${fmtDay(k)}${r ? ' · ' + (r.xp || 0) + ' XP' + (r.completed ? ' · cleared' : r.frozen ? ' · frozen' : r.missed ? ' · missed' : '') : ''}"></i>`; }
+  return `<div class="vwrap">
+    <div class="grid2">
+      <section class="win">${winH('INTERVIEW READINESS')}
+        <div class="row" style="flex-wrap:nowrap;align-items:center;gap:16px"><div class="ring" style="background:conic-gradient(${col} ${R.score * 3.6}deg,rgba(120,160,220,.15) 0)"><div><div class="big" style="color:${col};text-shadow:0 0 18px ${col}">${R.score}</div><div class="dim xs mono">/ 100</div></div></div>
+          <div style="min-width:0"><p style="line-height:1.4">${R.verdict}</p><p class="goldt sm" style="margin-top:8px"><b>Fix next — ${R.worst.k}:</b> ${R.worst.fix}</p></div></div>
+        <div style="margin-top:12px">${R.comps.map(c => `<div class="cond"><div class="kv"><span>${c.k} <span class="dim">· ${c.tip}</span></span><b>${c.v.toFixed(1)} / ${c.max}</b></div>${bar(c.v / c.max * 100, 'thin')}</div>`).join('')}</div>
+        <div class="dim xs" style="margin-top:6px">Scored only from what you have logged. No log, no credit.</div>
+      </section>
+      <section class="win">${winH('WEEKLY REVIEW')}
+        <div class="row" style="margin-bottom:8px"><button class="btn s" data-act="week" data-d="-1">◀</button><span class="mono sm">${fmtDay(wk)} – ${fmtDay(addDays(wk, 6))}${ui.weekOff === 0 ? ' · this week' : ''}</span><button class="btn s" data-act="week" data-d="1" ${ui.weekOff >= 0 ? 'disabled' : ''}>▶</button></div>
+        ${row('Problems solved (target ' + P[0] + '–' + P[1] + ')', ws.problems, P[0], ws.problems / P[0] * 100)}
+        ${row('Days cleared', ws.cleared, 7, ws.cleared / 7 * 100)}
+        ${row('Project milestones shipped', ws.milestones, 1, ws.milestones * 100)}
+        ${row('System-design topics', ws.sd, 1, ws.sd * 100)}
+        ${row('Mock interviews', ws.mocks, 1, ws.mocks * 100)}
+        ${row('Bosses defeated', ws.bosses, 4, ws.bosses / 4 * 100)}
+        ${row('Outreach messages', ws.outreach, CONFIG.weekly.outreach[0], ws.outreach / CONFIG.weekly.outreach[0] * 100)}
+        <div class="kv"><span>XP earned this week</span><b>${ws.xp}</b></div>
+        <div class="dim sm" style="margin-top:6px">${ws.attempted - ws.problems > 0 ? (ws.attempted - ws.problems) + ' attempt(s) failed this week — they are in the mistake queue.' : ''}</div>
+      </section>
+    </div>
+    <section class="win">${winH('STREAK CALENDAR', '<span class="dim xs" style="letter-spacing:0;font-family:var(--fb)">bright = cleared · faint = partial · red = missed · violet = frozen</span>')}<div class="cal">${cal}</div></section>
+    <section class="win">${winH('XP OVER TIME')}<canvas class="chart" id="xpChart"></canvas></section>
+  </div>`;
+};
+POST.analytics = () => drawXpChart();
+
+VIEWS.titles = () => {
+  const n = Object.keys(state.ach).length;
+  return `<div class="vwrap"><section class="win">${winH('TITLES & ACHIEVEMENTS', `<span class="tag gold">${n} / ${ACHIEVEMENTS.length}</span>`)}
+    <div class="grid3">${ACHIEVEMENTS.map(a => { const u = state.ach[a.id]; return `<div class="ach ${u ? 'un' : 'lock'}"><b>${u ? '♛ ' : '🔒 '}${a.n}</b><div class="sm ${u ? '' : 'dim'}">${a.d}</div>${u ? `<div class="row" style="margin-top:8px"><span class="dim xs mono">${fmtDay(u)}</span><span class="sp"></span>${state.player.title === a.id ? '<span class="tag gold">EQUIPPED</span>' : `<button class="btn s" data-act="equip" data-id="${a.id}">Equip</button>`}</div>` : ''}</div>`; }).join('')}</div>
+  </section></div>`;
+};
+
+/* ---- canvases ---- */
+function fitCanvas(cv) {
+  const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+const cssVar = n => getComputedStyle(document.body).getPropertyValue(n).trim();
+let radarRaf = 0;
+function drawRadar(instant) {
+  const cv = $('#radar'); if (!cv) return;
+  cancelAnimationFrame(radarRaf);
+  const t0 = performance.now(), dur = instant || RM() ? 1 : 1100;
+  const maxV = Math.max(20, ...STATS.map(s => state.stats[s])) * 1.15;
+  const frame = () => {
+    if (!cv.isConnected) return;
+    const { ctx, w, h } = fitCanvas(cv), p = Math.min(1, (performance.now() - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    const cx = w / 2, cy = h / 2 + 4, R = Math.min(w, h) * 0.36, acc = cssVar('--acc') || '#3ea6ff', spin = (1 - e) * 0.8;
+    const pt = (i, r) => { const a = -Math.PI / 2 + i * Math.PI * 2 / 5 + spin; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; };
+    ctx.clearRect(0, 0, w, h); ctx.lineWidth = 1;
+    for (let g = 1; g <= 4; g++) { ctx.beginPath(); for (let i = 0; i < 5; i++) { const [x, y] = pt(i, R * g / 4); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.closePath(); ctx.strokeStyle = 'rgba(140,190,255,' + (g === 4 ? .45 : .16) + ')'; ctx.stroke(); }
+    for (let i = 0; i < 5; i++) { const [x, y] = pt(i, R); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.strokeStyle = 'rgba(140,190,255,.16)'; ctx.stroke(); }
+    ctx.beginPath(); STATS.forEach((s, i) => { const [x, y] = pt(i, R * e * clamp(state.stats[s] / maxV, 0.04, 1)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
+    const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, 'rgba(139,92,255,.25)'); gr.addColorStop(1, acc + '88');
+    ctx.fillStyle = gr; ctx.shadowColor = acc; ctx.shadowBlur = 18; ctx.fill(); ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.font = '700 12px Orbitron, Rajdhani, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    STATS.forEach((s, i) => { const [x, y] = pt(i, R * e * clamp(state.stats[s] / maxV, 0.04, 1)); ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); const [lx, ly] = pt(i, R + 22); ctx.fillStyle = '#9fd4ff'; ctx.fillText(s, lx, ly); });
+    if (p < 1) radarRaf = requestAnimationFrame(frame);
+  };
+  frame();
+}
+function drawXpChart() {
+  const cv = $('#xpChart'); if (!cv) return;
+  const { ctx, w, h } = fitCanvas(cv), t = todayKey();
+  const span = clamp(dayDiff(state.startDate || t, t) + 1, 2, 120), pts = []; let cum = 0;
+  const before = Object.keys(state.days).filter(k => k < addDays(t, -(span - 1))).reduce((s, k) => s + (state.days[k].xp || 0), 0); cum = before;
+  for (let i = span - 1; i >= 0; i--) { const k = addDays(t, -i); cum += (state.days[k] && state.days[k].xp) || 0; pts.push({ k, v: cum, d: (state.days[k] && state.days[k].xp) || 0 }); }
+  const max = Math.max(100, cum) * 1.1, L = 46, B = 24, T = 10, R = 10, X = i => L + (w - L - R) * i / (pts.length - 1), Y = v => T + (h - T - B) * (1 - v / max);
+  ctx.clearRect(0, 0, w, h); ctx.font = '11px "Share Tech Mono", monospace'; ctx.fillStyle = '#7f95b8'; ctx.strokeStyle = 'rgba(120,160,220,.14)'; ctx.lineWidth = 1;
+  for (let g = 0; g <= 4; g++) { const v = max * g / 4, y = Y(v); ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(w - R, y); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(Math.round(v), L - 6, y + 4); }
+  ctx.textAlign = 'left'; ctx.fillText(fmtDay(pts[0].k), L, h - 6); ctx.textAlign = 'right'; ctx.fillText(fmtDay(t), w - R, h - 6);
+  const bw = Math.max(1, (w - L - R) / pts.length - 1), dmax = Math.max(50, ...pts.map(p => p.d));
+  ctx.fillStyle = 'rgba(139,92,255,.35)'; pts.forEach((p, i) => { const bh = (h - T - B) * 0.35 * p.d / dmax; ctx.fillRect(X(i) - bw / 2, h - B - bh, bw, bh); });
+  ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(X(i), Y(p.v)) : ctx.moveTo(X(i), Y(p.v)));
+  ctx.strokeStyle = '#3ea6ff'; ctx.lineWidth = 2; ctx.shadowColor = '#3ea6ff'; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.lineTo(X(pts.length - 1), h - B); ctx.lineTo(L, h - B); ctx.closePath();
+  const g = ctx.createLinearGradient(0, T, 0, h - B); g.addColorStop(0, 'rgba(62,166,255,.3)'); g.addColorStop(1, 'rgba(62,166,255,0)'); ctx.fillStyle = g; ctx.fill();
+  ctx.fillStyle = '#7f95b8'; ctx.textAlign = 'left'; ctx.fillText('line = cumulative XP earned · bars = XP per day', L + 6, T + 10);
+}
+/* ---- skill constellation ---- */
+let skillRaf = 0, skillHits = [];
+function skillPos(s, w, h) {
+  const ang = -Math.PI / 2 + BR_ORDER.indexOf(s.br) * Math.PI / 3, R = Math.min(w, h) * 0.5, r = (0.13 + s.d * 0.145) * R, lat = s.o * 0.13 * R;
+  return { x: w / 2 + Math.cos(ang) * r - Math.sin(ang) * lat, y: h / 2 + Math.sin(ang) * r + Math.cos(ang) * lat };
+}
+function startSkillCanvas() {
+  const cv = $('#skillCv'); if (!cv) return;
+  cancelAnimationFrame(skillRaf);
+  let hover = null;
+  const pick = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; let best = null, bd = 1e9; for (const hsh of skillHits) { const d = Math.hypot(hsh.x - x, hsh.y - y); if (d < bd) { bd = d; best = hsh; } } return best && bd < best.r * 1.9 ? best.id : null; };
+  cv.onmousemove = ev => { hover = pick(ev); cv.style.cursor = hover ? 'pointer' : 'default'; };
+  cv.onmouseleave = () => hover = null;
+  cv.onclick = ev => { const id = pick(ev); if (id) { ui.skillSel = id; FX.sfx('blip'); renderSkillSide(); } };
+  const frame = tms => {
+    if (!cv.isConnected) return;
+    const { ctx, w, h } = fitCanvas(cv), t = tms / 1000, R = Math.min(w, h) * 0.5, nr = clamp(R * 0.05, 11, 21), still = RM();
+    ctx.clearRect(0, 0, w, h);
+    // rings
+    ctx.strokeStyle = 'rgba(120,170,255,.08)'; ctx.lineWidth = 1;
+    for (let d = 1; d <= 5; d++) { ctx.beginPath(); ctx.arc(w / 2, h / 2, (0.13 + d * 0.145) * R, 0, 7); ctx.stroke(); }
+    const P = {}; skillHits = [];
+    for (const s of SKILLS) { const p = skillPos(s, w, h); if (!still) { p.x += Math.sin(t * 0.8 + s.d * 1.7 + s.o) * 2; p.y += Math.cos(t * 0.7 + s.d + s.o * 2) * 2; } P[s.id] = p; skillHits.push({ id: s.id, x: p.x, y: p.y, r: nr }); }
+    const edge = (a, b, lit, col) => { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.strokeStyle = lit ? col : 'rgba(120,150,200,.22)'; ctx.lineWidth = lit ? 2 : 1; if (lit) { ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.setLineDash([8, 6]); ctx.lineDashOffset = still ? 0 : -t * 22; } ctx.stroke(); ctx.shadowBlur = 0; ctx.setLineDash([]); };
+    for (const s of SKILLS) { const col = BRANCHES[s.br].col; if (!s.req.length) edge({ x: w / 2, y: h / 2 }, P[s.id], !!state.skills[s.id], col); for (const r of s.req) edge(P[r], P[s.id], !!(state.skills[r] && state.skills[s.id]), col); }
+    // core
+    ctx.beginPath(); ctx.arc(w / 2, h / 2, nr * 1.25, 0, 7); ctx.fillStyle = '#050b1c'; ctx.fill(); ctx.strokeStyle = '#8fe0ff'; ctx.lineWidth = 2; ctx.shadowColor = '#3ea6ff'; ctx.shadowBlur = 20; ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = '#d9eaff'; ctx.font = '700 ' + Math.round(nr * 0.6) + 'px Orbitron, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('YOU', w / 2, h / 2 + 1);
+    for (const s of SKILLS) {
+      const p = P[s.id], col = BRANCHES[s.br].col, ms = !!state.skills[s.id], av = skillAvail(s), sel = ui.skillSel === s.id, hv = hover === s.id;
+      const pul = av && !still ? 1 + Math.sin(t * 3 + s.d) * 0.08 : 1, r = nr * pul * (hv ? 1.12 : 1);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7);
+      ctx.fillStyle = ms ? col : '#060d20'; ctx.shadowColor = col; ctx.shadowBlur = ms ? 24 : av ? 12 : 0; ctx.fill();
+      ctx.lineWidth = sel ? 3 : 1.5; ctx.strokeStyle = sel ? '#ffc857' : ms || av ? col : 'rgba(120,150,200,.35)'; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.fillStyle = ms ? '#02101f' : av ? '#e8f4ff' : 'rgba(150,170,205,.55)'; ctx.font = '700 ' + Math.round(nr * (s.ab.length > 2 ? 0.52 : 0.68)) + 'px Orbitron, sans-serif'; ctx.fillText(s.ab, p.x, p.y + 1);
+      if (sel || hv) { ctx.font = '600 13px Rajdhani, sans-serif'; const tw = ctx.measureText(s.n).width + 12, lx = clamp(p.x, tw / 2 + 2, w - tw / 2 - 2), ly = p.y - r - 14 < 12 ? p.y + r + 14 : p.y - r - 14; ctx.fillStyle = 'rgba(3,8,20,.9)'; ctx.fillRect(lx - tw / 2, ly - 10, tw, 20); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.strokeRect(lx - tw / 2, ly - 10, tw, 20); ctx.fillStyle = '#fff'; ctx.fillText(s.n, lx, ly + 1); }
+    }
+    // branch labels
+    ctx.font = '700 10px Orbitron, sans-serif';
+    BR_ORDER.forEach((k, i) => { const md = Math.max(...SKILLS.filter(s => s.br === k).map(s => s.d)), ang = -Math.PI / 2 + i * Math.PI / 3, rr = (0.13 + (md + 0.75) * 0.145) * R, cs = Math.cos(ang), lab = BRANCHES[k].n.toUpperCase(), tw = ctx.measureText(lab).width; ctx.textAlign = cs > 0.3 ? 'left' : cs < -0.3 ? 'right' : 'center'; const pad = ctx.textAlign === 'center' ? tw / 2 + 4 : 4; const x = ctx.textAlign === 'left' ? clamp(w / 2 + cs * rr, pad, w - tw - 4) : ctx.textAlign === 'right' ? clamp(w / 2 + cs * rr, tw + 4, w - pad) : clamp(w / 2 + cs * rr, pad, w - pad), y = clamp(h / 2 + Math.sin(ang) * rr, 10, h - 10); ctx.fillStyle = BRANCHES[k].col; ctx.fillText(lab, x, y); }); ctx.textAlign = 'center';
+    skillRaf = requestAnimationFrame(frame);
+  };
+  skillRaf = requestAnimationFrame(frame);
+}
+
+/* ===================== SECTION 8 — UI: FOCUS TIMER ===================== */
+function startFocus(label, qid) {
+  state.timer = { label, qid: qid || null, mode: 'focus', dur: CONFIG.pomodoro.focusMin * 6e4, remain: CONFIG.pomodoro.focusMin * 6e4, endAt: Date.now() + CONFIG.pomodoro.focusMin * 6e4 };
+  FX.sfx('confirm'); save(); renderTimer();
+}
+function renderTimer() {
+  const el = $('#timer'), tm = state.timer;
+  if (!tm) { el.classList.add('hidden'); document.title = 'THE SYSTEM'; return; }
+  el.classList.remove('hidden'); el.classList.toggle('brk', tm.mode === 'break');
+  const rem = tm.endAt ? Math.max(0, tm.endAt - Date.now()) : tm.remain, run = !!tm.endAt;
+  const mm = String(Math.floor(rem / 6e4)).padStart(2, '0') + ':' + String(Math.floor(rem / 1000) % 60).padStart(2, '0');
+  if (!el.dataset.built || el.dataset.sig !== tm.mode + run + tm.label) {
+    el.dataset.built = 1; el.dataset.sig = tm.mode + run + tm.label;
+    el.innerHTML = `<div class="win-h" style="margin-bottom:4px"><span class="t">${tm.mode === 'focus' ? 'FOCUS' : 'BREAK'}</span><span class="sp"></span><button class="btn s ghost" data-act="timerClose" aria-label="Close timer">✕</button></div>
+      <div class="tq">${esc(tm.label)}</div><div class="tm" id="tmClock">${mm}</div><div class="bar thin" style="margin:6px 0 10px"><i id="tmBar" style="transition:none"></i></div>
+      <div class="row" style="justify-content:center"><button class="btn pri s" data-act="timerToggle">${run ? 'Pause' : 'Start'} (F)</button><button class="btn s" data-act="timerReset">Reset</button><button class="btn s" data-act="timerMode">${tm.mode === 'focus' ? 'Break' : 'Focus'}</button></div>`;
+  }
+  $('#tmClock').textContent = mm; $('#tmBar').style.width = (100 - rem / tm.dur * 100) + '%';
+  document.title = (run ? mm + ' · ' : '') + 'THE SYSTEM';
+}
+function setTimerMode(mode, autostart) {
+  const tm = state.timer; if (!tm) return;
+  tm.mode = mode; tm.dur = (mode === 'focus' ? CONFIG.pomodoro.focusMin : CONFIG.pomodoro.breakMin) * 6e4; tm.remain = tm.dur; tm.endAt = autostart ? Date.now() + tm.dur : null;
+}
+function tickTimer() {
+  const tm = state.timer; if (!tm) return;
+  if (tm.endAt && Date.now() >= tm.endAt) {
+    if (tm.mode === 'focus') { FX.sfx('quest'); focusDone(tm.label); setTimerMode('break', true); }
+    else { FX.sfx('confirm'); FX.notify('info', 'BREAK OVER', ['Return to the hunt.']); setTimerMode('focus', false); }
+    commit();
+  }
+  renderTimer();
+}
+
+/* ===================== SECTION 9 — UI: ACTIONS ===================== */
+function dsaForm(pre = {}) {
+  openForm({
+    title: 'LOG PROBLEM', submit: 'LOG IT',
+    fields: [
+      { k: 'name', label: 'Problem name', req: true, full: true, ph: 'e.g. Longest Substring Without Repeating Characters' },
+      { k: 'link', label: 'Link', type: 'url', full: true, ph: 'https://leetcode.com/problems/…' },
+      { k: 'diff', label: 'Difficulty', type: 'select', opts: [['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Hard']], val: pre.diff || 'medium' },
+      { k: 'pattern', label: 'Pattern', type: 'select', opts: PATTERNS, val: pre.pattern || PATTERNS[0] },
+      { k: 'time', label: 'Time taken (min)', type: 'number', min: 0, max: 600, ph: '30' },
+      { k: 'result', label: 'Outcome', type: 'select', opts: [['clean', 'Solved clean'], ['hint', 'Needed a hint'], ['fail', 'Failed / read solution']], val: 'clean' }
+    ],
+    note: `XP: easy ${CONFIG.xp.dsa.easy} · medium ${CONFIG.xp.dsa.medium} · hard ${CONFIG.xp.dsa.hard} (×${CONFIG.xp.resultMult.hint} with hint, ×${CONFIG.xp.resultMult.fail} if failed). Be honest — hinted and failed problems return as Mistake Quests.${verifyOn() ? ' <b class="goldt">Manual entries are unverified:</b> half XP, no quest credit, and they do not count toward readiness or floor bosses until a matching accepted submission is synced.' : ''}`,
+    onSubmit: v => { addDsa(v); commit(); }
+  });
+}
+function sdForm(after) {
+  openForm({ title: 'LOG SYSTEM-DESIGN TOPIC', submit: 'LOG IT', fields: [{ k: 'topic', label: 'Topic', req: true, full: true, ph: 'e.g. Rate limiter, consistent hashing, Design Twitter feed' }, { k: 'kind', label: 'Kind', type: 'select', opts: ['HLD', 'LLD', 'Fundamentals', 'Write-up'] }, { k: 'notes', label: 'Key takeaways', type: 'textarea', full: true }],
+    note: after ? 'Optional — cancel if you only revised and have nothing new to record.' : '', onSubmit: v => { addSd(v); commit(); } });
+}
+function jobForm(j) {
+  openForm({ title: j ? 'EDIT COMPANY' : 'ADD COMPANY', submit: 'SAVE', fields: [
+    { k: 'company', label: 'Company', req: true, val: j && j.company }, { k: 'role', label: 'Role', val: j && j.role, ph: 'SDE-1 / AI Engineer' },
+    { k: 'tier', label: 'Tier', type: 'select', opts: TIERS, val: j ? j.tier : TIERS[0] }, { k: 'stage', label: 'Stage', type: 'select', opts: STAGES.map(s => [s.id, s.n]), val: j ? j.stage : 'target' },
+    { k: 'ctc', label: 'Expected / offered CTC (LPA)', type: 'number', min: 0, max: 500, step: '0.1', val: j && j.ctc || '' }, { k: 'link', label: 'Job / referral link', type: 'url', val: j && j.link },
+    { k: 'notes', label: 'Notes (referrer, round feedback…)', type: 'textarea', full: true, val: j && j.notes }],
+    onSubmit: v => { if (j) { Object.assign(j, { company: v.company, role: v.role, tier: v.tier, link: safeUrl(v.link), notes: v.notes, ctc: +v.ctc || 0 }); setJobStage(j.id, v.stage); } else { addJob(Object.assign({}, v, { stage: 'target' })); if (v.stage !== 'target') setJobStage(state.jobs[state.jobs.length - 1].id, v.stage); } commit(); } });
+}
+const findQuest = id => dayRec().quests.find(q => q.id === id);
+const ACT = {
+  go: d => go(d.v),
+  closeModal: () => closeModal(),
+  toggleSound: () => { state.settings.sound = !state.settings.sound; SFX.apply(); if (state.settings.sound) FX.sfx('confirm'); save(); renderHud(); },
+  settings: () => openSettings(),
+  quest: d => { const q = findQuest(d.id); if (!q || q.done) return; if (q.type === 'dsa') return verifyOn() ? syncAccounts(true) : dsaForm({ diff: q.diff, pattern: q.pattern }); completeQuest(d.id); commit(); if (q.askSd) sdForm(true); },
+  focus: d => { const q = findQuest(d.id); startFocus(q ? q.title : 'Deep work', d.id); },
+  timerToggle: () => { const tm = state.timer; if (!tm) return; if (tm.endAt) { tm.remain = Math.max(0, tm.endAt - Date.now()); tm.endAt = null; } else tm.endAt = Date.now() + tm.remain; FX.sfx('blip'); save(); renderTimer(); },
+  timerReset: () => { if (state.timer) { setTimerMode(state.timer.mode, false); save(); renderTimer(); } },
+  timerMode: () => { if (state.timer) { setTimerMode(state.timer.mode === 'focus' ? 'break' : 'focus', false); save(); renderTimer(); } },
+  timerClose: () => { state.timer = null; save(); renderTimer(); },
+  srs: d => { reviewMistake(d.id, d.r); commit(); },
+  pen: d => { strikePenalty(+d.i); commit(); },
+  enterBoss: async d => { const b = WEEKLY_BOSSES.find(x => x.id === d.id), s = weekBosses()[d.id]; if (!b || s.entered) return; s.entered = true; save(); await FX.bossIntro(b); if (b.id === 'contest' && claimContestEvidence()) commit(); else render(); },
+  strike: d => { strikeBoss(d.id, +d.i); commit(); },
+  floorBoss: d => { if (defeatFloor(+d.id)) commit(); },
+  skillGo: d => { ui.skillSel = d.id; go('skills'); },
+  skillSel: d => { ui.skillSel = d.id; FX.sfx('blip'); renderSkillSide(); },
+  master: d => { const s = SKILL_BY[d.id]; confirmBox('CLAIM MASTERY', `Claim <b>${esc(s.n)}</b> as mastered?<br><span class="dim">The System cannot verify this. Claim it only if you could prove it in an interview tomorrow.</span>`, 'ARISE', () => { if (masterSkill(d.id)) commit(); }); },
+  tab: d => { ui.tab = d.t; FX.sfx('blip'); render(); },
+  patFilter: d => { ui.patFilter = ui.patFilter === d.p ? '' : d.p; render(); },
+  newDsa: () => dsaForm(ui.patFilter ? { pattern: ui.patFilter } : {}),
+  delDsa: d => confirmBox('DELETE ENTRY', 'Remove this problem from the log? XP already earned is kept.', 'DELETE', () => { state.dsa = state.dsa.filter(x => x.id !== d.id); commit(); }, true),
+  newProj: () => openForm({ title: 'NEW PROJECT', submit: 'CREATE', fields: [{ k: 'name', label: 'Project name', req: true, full: true, ph: 'e.g. RAG over company docs' }, { k: 'repo', label: 'GitHub link', type: 'url', full: true, ph: 'https://github.com/you/project' }], onSubmit: v => { addProject(v.name, v.repo); commit(); } }),
+  editProj: d => { const p = state.projects.find(x => x.id === d.id); if (!p) return; openForm({ title: 'EDIT PROJECT', submit: 'SAVE', fields: [{ k: 'name', label: 'Project name', req: true, full: true, val: p.name }, { k: 'repo', label: 'GitHub link', type: 'url', full: true, val: p.repo }], onSubmit: v => { p.name = v.name; p.repo = safeUrl(v.repo); commit(); } }); },
+  delProj: d => confirmBox('DELETE PROJECT', 'Delete this project and its milestones? Shadows raised from its milestones will fade.', 'DELETE', () => { state.projects = state.projects.filter(x => x.id !== d.id); commit(); }, true),
+  newMs: d => openForm({ title: 'NEW MILESTONE', submit: 'ADD', fields: [{ k: 't', label: 'Milestone', req: true, full: true, ph: 'e.g. Ingestion + chunking pipeline working' }], onSubmit: v => { const p = state.projects.find(x => x.id === d.id); if (p) { p.milestones.push({ id: uid(), t: v.t, done: false, created: new Date().toISOString() }); commit(); } } }),
+  ms: async (d, el) => {
+    const p = state.projects.find(x => x.id === d.p), m = p && p.milestones.find(x => x.id === d.id); if (!m) return;
+    if (m.done || !verifyOn()) { toggleMilestone(d.p, d.id); commit(); return; }
+    if (el) el.disabled = true;
+    const r = await verifyMilestone(p, m);
+    if (!r.ok) { FX.notify('warn', 'MILESTONE NOT VERIFIED', [r.msg]); if (el) el.disabled = false; return; }
+    m.commit = r.sha; m.commitUrl = r.url; p.lastVerified = r.next;
+    toggleMilestone(d.p, d.id); commit();
+  },
+  sync: () => syncAccounts(true),
+  markHint: d => { const it = state.dsa.find(x => x.id === d.id); if (!it || it.srs) return; it.result = 'hint'; it.srs = { stage: 0, due: addDays(todayKey(), CONFIG.srsDays[0]) }; FX.notify('info', 'MARKED AS HINTED', [it.name, 'It returns tomorrow as a Mistake Quest.']); commit(); },
+  delMs: d => { const p = state.projects.find(x => x.id === d.p); if (p) { p.milestones = p.milestones.filter(m => m.id !== d.id); commit(); } },
+  readme: d => { toggleReadme(d.p, d.k); commit(); },
+  newMock: () => openForm({ title: 'LOG MOCK INTERVIEW', submit: 'LOG IT', fields: [{ k: 'date', label: 'Date', type: 'date', val: todayKey(), req: true }, { k: 'type', label: 'Type', type: 'select', opts: MOCK_TYPES }, { k: 'score', label: 'Score (0–10)', type: 'number', min: 0, max: 10, step: '0.5', req: true, ph: '6' }, { k: 'by', label: 'With / platform', ph: 'Peer, Pramp, self-recorded…' }, { k: 'notes', label: 'Feedback and fixes', type: 'textarea', full: true }], onSubmit: v => { addMock(v); commit(); } }),
+  delMock: d => confirmBox('DELETE MOCK', 'Remove this mock from the log?', 'DELETE', () => { state.mocks = state.mocks.filter(x => x.id !== d.id); commit(); }, true),
+  newSd: () => sdForm(false),
+  delSd: d => confirmBox('DELETE TOPIC', 'Remove this topic from the log?', 'DELETE', () => { state.sd = state.sd.filter(x => x.id !== d.id); commit(); }, true),
+  outreach: () => { logOutreach(1); commit(); },
+  newJob: () => jobForm(null),
+  editJob: d => { const j = state.jobs.find(x => x.id === d.id); if (j) jobForm(j); },
+  delJob: d => confirmBox('REMOVE COMPANY', 'Remove this company from the pipeline?', 'REMOVE', () => { state.jobs = state.jobs.filter(x => x.id !== d.id); commit(); }, true),
+  jobMove: d => { const j = state.jobs.find(x => x.id === d.id); if (!j) return; const i = STAGES.findIndex(s => s.id === j.stage) + +d.d; if (STAGES[i]) { setJobStage(j.id, STAGES[i].id); commit(); } },
+  week: d => { ui.weekOff = Math.min(0, ui.weekOff + +d.d); render(); },
+  equip: d => { if (state.ach[d.id]) { state.player.title = d.id; FX.sfx('confirm'); commit(); } },
+  exportSave: () => { exportSave(); FX.notify('info', 'BACKUP EXPORTED', ['Keep the JSON file somewhere safe.']); },
+  importSave: () => $('#importFile').click(),
+  resetAsk: () => openForm({ title: 'RESET THE SYSTEM', submit: 'ERASE EVERYTHING', fields: [{ k: 'c', label: 'Type RESET to confirm', req: true, full: true }], note: 'This deletes all progress on this device. Export a backup first if unsure.', onSubmit: v => { if (v.c.trim().toUpperCase() !== 'RESET') { FX.notify('warn', 'RESET CANCELLED', ['Confirmation text did not match.']); return; } try { localStorage.removeItem(CONFIG.storageKey); } catch (e) { } location.reload(); } }),
+  gyro: async () => { const ok = await World.enableGyro(); state.settings.gyro = ok; save(); FX.notify(ok ? 'info' : 'warn', ok ? 'GYRO PARALLAX ENABLED' : 'GYRO UNAVAILABLE', [ok ? 'Tilt your device.' : 'No motion sensor or permission denied.']); },
+  help: () => openHelp()
+};
+function openSettings() {
+  const s = state.settings, sel = (k, opts, cur) => `<select data-set="${k}">${opts.map(o => `<option value="${o[0]}" ${String(cur) === String(o[0]) ? 'selected' : ''}>${o[1]}</option>`).join('')}</select>`;
+  openModal(`${winH('SETTINGS')}
+    <div class="form">
+      <label class="f">Player name<input type="text" data-set="name" maxlength="24" value="${esc(state.player.name)}"></label>
+      <label class="f">Current CTC (LPA)<input type="number" data-set="ctc" min="0" max="500" step="0.1" value="${state.player.ctc}"></label>
+      <label class="f">Weekday hours<input type="number" data-set="hoursWeekday" min="0.5" max="8" step="0.5" value="${state.player.hoursWeekday}"></label>
+      <label class="f">Weekend hours<input type="number" data-set="hoursWeekend" min="1" max="12" step="0.5" value="${state.player.hoursWeekend}"></label>
+      <label class="f">LeetCode username<input type="text" data-set="lc" maxlength="60" value="${esc(state.accounts.lc)}" placeholder="username or profile URL"></label>
+      <label class="f">Codeforces handle<input type="text" data-set="cf" maxlength="60" value="${esc(state.accounts.cf)}" placeholder="handle or profile URL"></label>
+      <label class="f full">Verification${sel('verify', [['1', 'Strict — quests need real accepted submissions; milestones need real commits'], ['0', 'Off — trust what I tick']], s.verify ? 1 : 0)}</label>
+      <label class="f">Sound${sel('sound', [['1', 'On'], ['0', 'Off']], s.sound ? 1 : 0)}</label>
+      <label class="f">Volume<input type="range" data-set="volume" min="0" max="1" step="0.05" value="${s.volume}"></label>
+      <label class="f">Graphics quality${sel('quality', [['auto', 'Auto (adapts to FPS)'], ['high', 'High'], ['medium', 'Medium'], ['low', 'Low']], s.quality)}</label>
+      <label class="f">Reduced motion${sel('motion', [['auto', 'Follow system'], ['on', 'On'], ['off', 'Off']], s.motion)}</label>
+      <label class="f full">Difficulty${sel('difficulty', Object.entries(CONFIG.difficulty).map(([k, v]) => [k, `${v.label} — XP ×${v.xp}, penalties ×${v.penalty}`]), s.difficulty)}</label>
+      <div class="full dim sm">Hour changes apply from tomorrow's quest. ${persistOk ? 'Progress is saved in this browser (localStorage).' : '<span class="redt">Storage is blocked in this browser — progress will not survive a reload. Export a backup.</span>'} ${World.info()}</div>
+      <div class="full row"><button class="btn" data-act="exportSave">Export backup</button><button class="btn" data-act="importSave">Import backup</button><button class="btn" data-act="gyro">Enable gyro</button><button class="btn" data-act="help">Shortcuts</button><span class="sp"></span><button class="btn red" data-act="resetAsk">Reset</button></div>
+      <div class="full row"><span class="sp"></span><button class="btn pri" data-act="closeModal">Done</button></div>
+    </div>`);
+}
+function applySetting(k, v) {
+  const s = state.settings, p = state.player;
+  if (k === 'name') p.name = v.trim().slice(0, 24) || 'Player';
+  else if (k === 'ctc') p.ctc = clamp(+v || CONFIG.salary.current, 0.1, 500);
+  else if (k === 'hoursWeekday') p.hoursWeekday = clamp(+v || CONFIG.hours.weekday, 0.5, 8);
+  else if (k === 'hoursWeekend') p.hoursWeekend = clamp(+v || CONFIG.hours.weekend, 1, 12);
+  else if (k === 'sound') { s.sound = v === '1'; SFX.apply(); }
+  else if (k === 'volume') { s.volume = +v; SFX.apply(); FX.sfx('blip'); }
+  else if (k === 'quality') { s.quality = v; World.setQuality(v); }
+  else if (k === 'motion') { s.motion = v; applyMotion(); }
+  else if (k === 'difficulty') s.difficulty = v;
+  else if (k === 'lc' || k === 'cf') { state.accounts[k] = cleanHandle(v); sync[k] = null; }
+  else if (k === 'verify') s.verify = v === '1';
+  save(); renderHud(); if ($('#modal').classList.contains('hidden')) render();
+}
+function openHelp() {
+  const rows = [['1 – 9', 'Switch view'], ['R', 'Sync LeetCode / Codeforces'], ['N', 'Log a DSA problem'], ['F', 'Start / pause focus timer'], ['M', 'Mute / unmute'], ['S', 'Settings'], ['?', 'This help'], ['Esc', 'Close window / skip cinematic']];
+  openModal(`${winH('KEYBOARD SHORTCUTS')}<table class="tbl">${rows.map(r => `<tr><td style="width:110px"><kbd class="k">${r[0]}</kbd></td><td>${r[1]}</td></tr>`).join('')}</table><div class="row" style="margin-top:14px"><span class="sp"></span><button class="btn pri" data-act="closeModal">Close</button></div>`);
+}
+function bindUi() {
+  document.addEventListener('click', ev => {
+    const el = ev.target.closest('[data-act]'); if (!el || el.disabled) return;
+    const fn = ACT[el.dataset.act]; if (fn) { SFX.unlock(); fn(el.dataset, el, ev); }
+  });
+  document.addEventListener('change', ev => { const el = ev.target.closest('[data-set]'); if (el) applySetting(el.dataset.set, el.value); });
+  document.addEventListener('submit', ev => {
+    if (ev.target.id !== 'frm') return; ev.preventDefault();
+    const v = {}; new FormData(ev.target).forEach((val, k) => v[k] = typeof val === 'string' ? val.trim() : val);
+    const cb = formCb; closeModal(); if (cb) cb(v);
+  });
+  $('#modal').addEventListener('mousedown', ev => { if (ev.target.id === 'modal') closeModal(); });
+  $('#importFile').addEventListener('change', ev => {
+    const f = ev.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { try { importSave(rd.result); location.reload(); } catch (e) { FX.notify('warn', 'IMPORT FAILED', [e.message]); } };
+    rd.readAsText(f); ev.target.value = '';
+  });
+  // kanban drag & drop
+  let dragId = null;
+  document.addEventListener('dragstart', ev => { const c = ev.target.closest && ev.target.closest('.kcard'); if (c) { dragId = c.dataset.job; ev.dataTransfer.effectAllowed = 'move'; try { ev.dataTransfer.setData('text/plain', dragId); } catch (e) { } } });
+  document.addEventListener('dragover', ev => { const c = ev.target.closest && ev.target.closest('.kcol'); if (c && dragId) { ev.preventDefault(); $$('.kcol.over').forEach(x => x !== c && x.classList.remove('over')); c.classList.add('over'); } });
+  document.addEventListener('drop', ev => { const c = ev.target.closest && ev.target.closest('.kcol'); if (c && dragId) { ev.preventDefault(); setJobStage(dragId, c.dataset.stage); dragId = null; commit(); } });
+  document.addEventListener('dragend', () => { dragId = null; $$('.kcol.over').forEach(x => x.classList.remove('over')); });
+  document.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') { if (FX.skip()) return; if (!$('#modal').classList.contains('hidden')) closeModal(); return; }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    const tg = ev.target.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT') return;
+    if (!state.onboarded || !$('#modal').classList.contains('hidden') || !$('#cine').classList.contains('hidden')) return;
+    const k = ev.key.toLowerCase();
+    if (k >= '1' && k <= '9') { SFX.unlock(); go(NAV[+k - 1].id); }
+    else if (k === 'n') { ev.preventDefault(); dsaForm(); }
+    else if (k === 'f') { if (state.timer) ACT.timerToggle(); else { const q = dayRec().quests.find(x => !x.done); startFocus(q ? q.title : 'Deep work', q && q.id); } }
+    else if (k === 'm') ACT.toggleSound();
+    else if (k === 's') openSettings();
+    else if (k === 'r') syncAccounts(true);
+    else if (k === '?' || k === '/') openHelp();
+  });
+  let rz = 0; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (ui.view === 'hub') drawRadar(true); if (ui.view === 'analytics') drawXpChart(); }, 150); });
+}
+
+/* ===================== SECTION 10 — 3D HUB (Three.js r128) =====================
+   Everything here is optional: if WebGL or the CDN is unavailable the app keeps
+   working on the CSS backdrop and every World.* call becomes a no-op.           */
+const World = (() => {
+  let ok = false, renderer, scene, camera, composer, bloom, fxPass, useComposer = false;
+  let tier = 2, autoQ = true, fps = 60, lowHits = 0, W = 1, H = 1, gyroOn = false;
+  let particles, mists = [], shafts = [], gateLight, runeLight, amb, soldiers, eyes, smoke, beam;
+  const st = { pen: 0, penT: 0, push: 0, pushT: 0, shake: 0, boost: 0, mx: 0, my: 0, tx: 0, ty: 0, army: 0, armyReady: false };
+  const U = { uTime: { value: 0 }, uPen: { value: 0 }, uFogC: { value: null }, uFogD: { value: 0.03 }, uAcc: { value: null }, uAcc2: { value: null } };
+  const C = {};
+  const MAXS = CONFIG.army.max, SMK = 8;
+  const sol = [];           // {x,z,ry,s,rise}
+  let slots = [];
+
+  const NOISE = `
+    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+      return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+    float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}`;
+  const HEAD = `uniform float uTime,uPen,uFogD;uniform vec3 uFogC,uAcc,uAcc2;varying vec3 vW;varying float vD;varying vec2 vUv;
+    float fogF(){return 1.-exp(-uFogD*uFogD*vD*vD);}`;
+  const VS = `varying vec3 vW;varying float vD;varying vec2 vUv;
+    void main(){vUv=uv;vec4 wp=modelMatrix*vec4(position,1.);vW=wp.xyz;vec4 mv=viewMatrix*wp;vD=length(mv.xyz);gl_Position=projectionMatrix*mv;}`;
+  const mat = (fs, o = {}) => new THREE.ShaderMaterial(Object.assign({ uniforms: Object.assign({}, U, o.uniforms || {}), vertexShader: o.vs || VS, fragmentShader: HEAD + NOISE + fs }, o.opts || {}));
+  const ADD = () => ({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+
+  function build() {
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x03060f, 0.03);
+    camera = new THREE.PerspectiveCamera(52, 1, 0.1, 200);
+    C.accN = new THREE.Color(0.24, 0.62, 1.0); C.acc2N = new THREE.Color(0.52, 0.34, 1.0); C.fogN = new THREE.Color(0.010, 0.022, 0.055);
+    C.accP = new THREE.Color(1.0, 0.2, 0.12); C.acc2P = new THREE.Color(1.0, 0.45, 0.1); C.fogP = new THREE.Color(0.30, 0.08, 0.035);
+    U.uAcc.value = C.accN.clone(); U.uAcc2.value = C.acc2N.clone(); U.uFogC.value = C.fogN.clone();
+
+    /* floor: flagstones lit by the gate + rune, dunes in the penalty zone */
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), mat(`
+      void main(){
+        vec2 p=vW.xz; vec2 g=p*.42; vec2 id=floor(g); vec2 f=fract(g);
+        float edge=smoothstep(0.,.05,min(min(f.x,1.-f.x),min(f.y,1.-f.y)));
+        float grit=fbm(p*2.6); float tone=.5+.5*hash(id);
+        vec3 stone=vec3(.05,.065,.10)*(.45+tone*.6)*(.55+grit*.8)*mix(.3,1.,edge);
+        vec2 gp=p-vec2(0.,-12.); float lg=1./(1.+.02*dot(gp,gp)); float lr=1./(1.+.10*dot(p,p));
+        vec3 col=stone*(.5+uAcc*lg*9.+uAcc2*lr*5.);
+        float refl=exp(-abs(p.x)*.28)*smoothstep(9.,-12.,p.y)*(.35+grit*.5)*edge;
+        col+=uAcc*refl*.10;
+        float dune=fbm(vec2(p.x*.22+uTime*.06,p.y*.55))+.12*sin(p.y*5.+fbm(p*.8)*5.);
+        vec3 sand=vec3(.50,.15,.06)*(.25+dune*.7);
+        col=mix(col,sand,uPen);
+        col=mix(col,uFogC,fogF());
+        gl_FragColor=vec4(col,1.);
+      }`));
+    floor.rotation.x = -Math.PI / 2; scene.add(floor);
+
+    /* layered ground mist */
+    for (let i = 0; i < 3; i++) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), mat(`uniform float uOff,uA;
+        void main(){
+          float sp=1.+uPen*9.;
+          float n=fbm(vW.xz*(.13+uOff*.02)+vec2(uTime*.035*sp+uOff*13.,uTime*.02+uOff*7.));
+          float a=smoothstep(.36,.82,n)*uA*smoothstep(40.,10.,length(vW.xz))*smoothstep(1.2,6.,vD);
+          vec3 col=mix(vec3(.10,.17,.30)+uAcc*.10,vec3(.62,.24,.10),uPen);
+          gl_FragColor=vec4(col,a*(1.+uPen*.8));
+        }`, { uniforms: { uOff: { value: i + 1 }, uA: { value: [0.55, 0.4, 0.3][i] } }, opts: { transparent: true, depthWrite: false } }));
+      m.rotation.x = -Math.PI / 2; m.position.y = [0.22, 0.75, 1.5][i]; m.renderOrder = 2 + i; scene.add(m); mists.push(m);
+    }
+
+    /* rune circle */
+    const rune = new THREE.Mesh(new THREE.PlaneGeometry(8.4, 8.4), mat(`
+      float ring(float r,float R,float w){return smoothstep(w,0.,abs(r-R));}
+      void main(){
+        vec2 p=(vUv-.5)*2.; float r=length(p); float a=atan(p.y,p.x); const float TAU=6.2831853;
+        float c=ring(r,.96,.012)+ring(r,.90,.006)+ring(r,.66,.009)+ring(r,.60,.005)+ring(r,.36,.009);
+        float u=(a+uTime*.12)/TAU+.5; float seg=36.; float ci=mod(floor(u*seg),seg);
+        vec2 cuv=vec2(fract(u*seg),(r-.69)/.19);
+        if(cuv.y>0.&&cuv.y<1.){vec2 gg=cuv*vec2(3.,4.);vec2 gi=floor(gg);vec2 gf=fract(gg);
+          float on=step(.42,hash(gi+ci*7.31));float pad=step(.14,gf.x)*step(gf.x,.86)*step(.14,gf.y)*step(gf.y,.86);
+          c+=on*pad*.9*step(.1,cuv.x)*step(cuv.x,.9);}
+        float tk=abs(fract((a-uTime*.2)/TAU*24.)-.5); c+=smoothstep(.07,0.,tk)*step(.40,r)*step(r,.56)*.7;
+        float a3=a+uTime*.3; float t1=abs(cos(floor(.5+a3/2.0944)*2.0944-a3)*r-.165);
+        float a4=a3+3.14159; float t2=abs(cos(floor(.5+a4/2.0944)*2.0944-a4)*r-.165);
+        c+=(smoothstep(.009,0.,t1)+smoothstep(.009,0.,t2))*step(r,.35);
+        float pulse=.75+.25*sin(uTime*1.7);
+        vec3 col=mix(uAcc,uAcc2,smoothstep(.2,1.,r))*c*pulse*1.7+uAcc*exp(-r*r*3.)*.10;
+        col*=smoothstep(1.,.97,r)*(1.-fogF());
+        gl_FragColor=vec4(col,1.);
+      }`, { opts: ADD() }));
+    rune.rotation.x = -Math.PI / 2; rune.position.y = 0.04; rune.renderOrder = 1; scene.add(rune);
+
+    /* the Gate: swirling portal + stone arch */
+    const gate = new THREE.Mesh(new THREE.PlaneGeometry(9.2, 12.8), mat(`
+      void main(){
+        vec2 p=(vUv-.5)*2.; float r=length(p)/.68; float a=atan(p.y,p.x);
+        float sw=a+uTime*.35+2.4/(r+.28);
+        vec2 q=vec2(cos(sw),sin(sw))*r*2.1;
+        float n=fbm(q+vec2(0.,uTime*.12)); float n2=fbm(q*2.2-vec2(uTime*.22,0.)+n*1.6);
+        float core=smoothstep(1.,0.,r);
+        vec3 deep=mix(vec3(.004,.008,.03),uAcc2*.55,n);
+        vec3 col=mix(deep,uAcc,smoothstep(.35,.8,n2));
+        col+=mix(vec3(.8,.95,1.),vec3(1.,.85,.7),uPen)*pow(n2,4.)*2.2;
+        col*=.3+core*1.1;
+        float rim=exp(-pow((r-.95)*8.,2.)); col+=mix(uAcc,vec3(1.),.45)*rim*2.4;
+        float inside=smoothstep(1.02,.96,r);
+        float halo=exp(-max(r-1.,0.)*4.5)*.55*(1.-inside);
+        col=mix(uAcc*1.2,col,inside);
+        gl_FragColor=vec4(col,max(inside,halo));
+      }`, { opts: { transparent: true, depthWrite: false } }));
+    gate.position.set(0, 4.5, -12); gate.renderOrder = 0; scene.add(gate);
+    const stone = new THREE.MeshStandardMaterial({ color: 0x1b2438, roughness: 0.82, metalness: 0.15, flatShading: true });
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(3.25, 0.34, 6, 30), stone);
+    arch.scale.set(1.0, 1.36, 1); arch.position.set(0, 4.5, -12.1); scene.add(arch);
+    for (const sx of [-1, 1]) for (let i = 0; i < 4; i++) {
+      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.78, 16, 7), stone);
+      p.position.set(sx * 11.5, 8, 4 - i * 6.5); p.rotation.y = i * 0.7; scene.add(p);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 1.9), stone); cap.position.set(sx * 11.5, 0.25, 4 - i * 6.5); cap.rotation.y = i * 0.4; scene.add(cap);
+    }
+    amb = new THREE.AmbientLight(0x2a3a66, 0.55); scene.add(amb);
+    gateLight = new THREE.PointLight(0x3ea6ff, 3.2, 46, 1.6); gateLight.position.set(0, 4.5, -10.5); scene.add(gateLight);
+    runeLight = new THREE.PointLight(0x8b5cff, 1.6, 16, 2); runeLight.position.set(0, 1.2, 0); scene.add(runeLight);
+
+    /* volumetric-looking light shafts */
+    const shaftMat = () => mat(`uniform float uSeed;
+      void main(){
+        float x=abs(vUv.x-.5)*2.; float core=pow(1.-x,2.2);
+        float n=.55+.45*fbm(vec2(vUv.x*3.+uSeed*9.,vUv.y*2.-uTime*.06));
+        float a=core*smoothstep(0.,.25,vUv.y)*smoothstep(1.05,.55,vUv.y)*n;
+        vec3 col=mix(vec3(.45,.65,1.),uAcc,.5)*a*mix(.16,.05,uPen)*(1.-fogF()*.7);
+        gl_FragColor=vec4(col,1.);
+      }`, { uniforms: { uSeed: { value: Math.random() } }, opts: ADD() });
+    [[-6, -4, 0.22, 3.4], [5, -6, -0.18, 3], [-2.5, -9, 0.1, 2.4], [8.5, -1, -0.3, 2.6], [-9, 0, 0.34, 2.8], [1.5, -3, -0.06, 2]].forEach(([x, z, rot, w]) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 17), shaftMat());
+      m.position.set(x, 8, z); m.rotation.z = rot; m.userData.rot = rot; m.renderOrder = 6; scene.add(m); shafts.push(m);
+    });
+
+    /* GPU particles: mana motes / embers, becoming a sandstorm in the penalty zone */
+    const N = CONFIG.quality.particles[2], pos = new Float32Array(N * 3), seed = new Float32Array(N * 4);
+    for (let i = 0; i < N; i++) { pos[i * 3] = (Math.random() - 0.5) * 40; pos[i * 3 + 1] = Math.random() * 11; pos[i * 3 + 2] = -18 + Math.random() * 28; for (let k = 0; k < 4; k++) seed[i * 4 + k] = Math.random(); }
+    const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); pg.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4));
+    particles = new THREE.Points(pg, new THREE.ShaderMaterial({
+      uniforms: Object.assign({ uPx: { value: 1 } }, U), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: `uniform float uTime,uPen,uPx,uFogD;attribute vec4 aSeed;varying float vA;varying float vK;
+        void main(){
+          vec3 p=position; float sp=.12+aSeed.x*.4;
+          p.y=mod(p.y+uTime*sp*mix(1.,.25,uPen),11.);
+          p.x+=sin(uTime*.4+aSeed.y*40.)*.5; p.z+=cos(uTime*.31+aSeed.z*40.)*.5;
+          float wind=mod(position.x+20.+uTime*(7.+aSeed.x*10.),40.)-20.;
+          p.x=mix(p.x,wind,uPen); p.y=mix(p.y,p.y*.55+sin(uTime*2.+aSeed.y*30.)*.3,uPen);
+          vec4 mv=modelViewMatrix*vec4(p,1.); float d=-mv.z;
+          gl_PointSize=uPx*(1.2+aSeed.w*3.2)*(1.+uPen*.6)*(22./max(d,1.));
+          float tw=.55+.45*sin(uTime*(1.+aSeed.z*3.)+aSeed.w*50.);
+          vA=tw*smoothstep(0.,1.,p.y)*smoothstep(11.,8.5,p.y)*exp(-uFogD*uFogD*d*d*.6)*smoothstep(.6,2.5,d);
+          vK=aSeed.w; gl_Position=projectionMatrix*mv;
+        }`,
+      fragmentShader: `uniform vec3 uAcc,uAcc2;uniform float uPen;varying float vA;varying float vK;
+        void main(){vec2 c=gl_PointCoord-.5;float d=length(c);float a=smoothstep(.5,0.,d);a*=a;
+          vec3 col=mix(uAcc,uAcc2,step(.6,vK));col=mix(col,vec3(1.,.55,.2),step(.93,vK));
+          col=mix(col,vec3(1.,.5,.25),uPen*.8);
+          gl_FragColor=vec4(col*a*vA*1.5,1.);}`
+    }));
+    particles.frustumCulled = false; particles.renderOrder = 7; scene.add(particles);
+
+    buildArmy();
+  }
+
+  /* ---------- shadow army ---------- */
+  function buildArmy() {
+    for (let k = 0; k < 9; k++) {
+      const R = 4.9 + k * 1.05, n = Math.floor(Math.PI * 1.16 * R / 1.0);
+      for (let i = 0; i < n; i++) {
+        const th = (-0.08 + 1.16 * (i + 0.5) / n) * Math.PI, x = Math.cos(th) * R, z = -Math.sin(th) * R;
+        if (Math.abs(th - Math.PI / 2) < 0.16 + 0.02 * k || z < -10 || Math.abs(x) > 10.2) continue;
+        slots.push({ x: x + (Math.random() - 0.5) * 0.25, z: z + (Math.random() - 0.5) * 0.25, k, c: Math.abs(th - Math.PI / 2) });
+      }
+    }
+    slots.sort((a, b) => a.k - b.k || a.c - b.c); slots = slots.slice(0, MAXS);
+    const prof = [[0.001, 0], [0.36, 0], [0.33, 0.22], [0.24, 0.72], [0.27, 1.02], [0.31, 1.2], [0.17, 1.33], [0.2, 1.46], [0.19, 1.62], [0.1, 1.76], [0.001, 1.8]].map(p => new THREE.Vector2(p[0], p[1]));
+    const geo = new THREE.LatheGeometry(prof, 7); geo.scale(1.2, 1, 0.78);
+    const m = new THREE.ShaderMaterial({
+      uniforms: U,
+      vertexShader: `varying vec3 vN;varying vec3 vV;varying vec3 vW;varying float vD;
+        void main(){
+          #ifdef USE_INSTANCING
+            mat4 im=instanceMatrix;
+          #else
+            mat4 im=mat4(1.);
+          #endif
+          vec4 wp=modelMatrix*im*vec4(position,1.);vW=wp.xyz;vec4 mv=viewMatrix*wp;vD=length(mv.xyz);vV=normalize(-mv.xyz);
+          vN=normalize(mat3(viewMatrix)*mat3(modelMatrix)*mat3(im)*normal);gl_Position=projectionMatrix*mv;}`,
+      fragmentShader: `uniform float uTime,uFogD;uniform vec3 uAcc,uAcc2,uFogC;varying vec3 vN;varying vec3 vV;varying vec3 vW;varying float vD;` + NOISE + `
+        void main(){
+          float n=noise(vec2(vW.x*5.+vW.z*3.,vW.y*4.-uTime*.9));
+          if(vW.y<.02+n*.3)discard;
+          float f=pow(1.-abs(dot(normalize(vN),normalize(vV))),2.2);
+          vec3 col=vec3(.004,.006,.016)+uAcc2*f*1.0+uAcc*f*f*.9;
+          col*=.25+.75*smoothstep(0.,.9,vW.y);
+          col=mix(col,uFogC,(1.-exp(-uFogD*uFogD*vD*vD))*.85);
+          gl_FragColor=vec4(col,1.);}`,
+      side: THREE.DoubleSide
+    });
+    soldiers = new THREE.InstancedMesh(geo, m, MAXS); soldiers.count = 0; soldiers.frustumCulled = false; scene.add(soldiers);
+    const ep = new Float32Array(MAXS * 2 * 3), ea = new Float32Array(MAXS * 2);
+    const eg = new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.BufferAttribute(ep, 3)); eg.setAttribute('aOn', new THREE.BufferAttribute(ea, 1));
+    eyes = new THREE.Points(eg, new THREE.ShaderMaterial({
+      uniforms: Object.assign({ uPx: { value: 1 } }, U), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: `uniform float uPx,uTime;attribute float aOn;varying float vA;
+        void main(){vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=uPx*9.*(10./max(-mv.z,1.));vA=aOn*(.8+.2*sin(uTime*3.+position.x*9.));gl_Position=projectionMatrix*mv;}`,
+      fragmentShader: `uniform vec3 uAcc;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,d);gl_FragColor=vec4(mix(uAcc,vec3(1.),.55)*a*a*vA*3.,1.);}`
+    }));
+    eyes.frustumCulled = false; eyes.geometry.setDrawRange(0, 0); eyes.renderOrder = 8; scene.add(eyes);
+    const sp = new Float32Array(MAXS * SMK * 3), ss = new Float32Array(MAXS * SMK);
+    for (let i = 0; i < ss.length; i++) ss[i] = Math.random();
+    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3)); sg.setAttribute('aSeed', new THREE.BufferAttribute(ss, 1));
+    smoke = new THREE.Points(sg, new THREE.ShaderMaterial({
+      uniforms: Object.assign({ uPx: { value: 1 } }, U), transparent: true, depthWrite: false,
+      vertexShader: `uniform float uPx,uTime;attribute float aSeed;varying float vA;
+        void main(){float t=fract(uTime*(.1+aSeed*.12)+aSeed*7.);
+          vec3 p=position+vec3(sin(aSeed*50.+uTime*.7)*.32*(.4+t),t*2.2,cos(aSeed*31.+uTime*.6)*.24*(.4+t));
+          vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=uPx*(26.+aSeed*30.)*(1.+t)*(10./max(-mv.z,1.));
+          vA=(1.-t)*smoothstep(0.,.15,t)*.42;gl_Position=projectionMatrix*mv;}`,
+      fragmentShader: `uniform vec3 uAcc2;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.05,d);gl_FragColor=vec4(vec3(.02,.015,.05)+uAcc2*.10,a*vA);}`
+    }));
+    smoke.frustumCulled = false; smoke.geometry.setDrawRange(0, 0); smoke.renderOrder = 5; scene.add(smoke);
+    beam = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.75, 9, 14, 1, true), mat(`uniform float uOp;
+      void main(){float a=smoothstep(1.,0.,vUv.y)*(.6+.4*noise(vec2(vUv.x*20.,vUv.y*6.-uTime*4.)));gl_FragColor=vec4(mix(uAcc2,vec3(1.),.3)*a*uOp*1.6,1.);}`, { uniforms: { uOp: { value: 0 } }, opts: ADD() }));
+    beam.visible = false; beam.renderOrder = 9; scene.add(beam);
+  }
+  const dummy = window.THREE ? new THREE.Object3D() : null;
+  function placeSoldier(i) {
+    const s = sol[i], e = clamp(s.rise, 0, 1), ez = 1 - Math.pow(1 - e, 3), y = -2.1 * (1 - ez) * s.s;
+    dummy.position.set(s.x, y, s.z); dummy.rotation.set(0, s.ry, 0); dummy.scale.set(s.s, s.s, s.s); dummy.updateMatrix();
+    soldiers.setMatrixAt(i, dummy.matrix);
+    const ep = eyes.geometry.attributes.position.array, ea = eyes.geometry.attributes.aOn.array, cs = Math.cos(s.ry), sn = Math.sin(s.ry);
+    for (let k = 0; k < 2; k++) { const lx = (k ? 0.07 : -0.07) * s.s, lz = 0.165 * s.s; ep[(i * 2 + k) * 3] = s.x + lx * cs + lz * sn; ep[(i * 2 + k) * 3 + 1] = y + 1.53 * s.s; ep[(i * 2 + k) * 3 + 2] = s.z - lx * sn + lz * cs; ea[i * 2 + k] = clamp((e - 0.55) / 0.45, 0, 1); }
+    const sp = smoke.geometry.attributes.position.array;
+    for (let k = 0; k < SMK; k++) { sp[(i * SMK + k) * 3] = s.x; sp[(i * SMK + k) * 3 + 1] = Math.max(0, y); sp[(i * SMK + k) * 3 + 2] = s.z; }
+  }
+  function flushArmy() {
+    soldiers.count = sol.length; soldiers.instanceMatrix.needsUpdate = true;
+    eyes.geometry.attributes.position.needsUpdate = true; eyes.geometry.attributes.aOn.needsUpdate = true; eyes.geometry.setDrawRange(0, sol.length * 2);
+    smoke.geometry.attributes.position.needsUpdate = true; smoke.geometry.setDrawRange(0, sol.length * SMK);
+  }
+  function setArmy(n) {
+    if (!ok) return;
+    n = clamp(n, 0, slots.length);
+    const first = !st.armyReady; st.armyReady = true;
+    if (n < sol.length) { sol.length = n; flushArmy(); return; }
+    let added = 0;
+    while (sol.length < n) {
+      const sl = slots[sol.length];
+      sol.push({ x: sl.x, z: sl.z, ry: (Math.random() - 0.5) * 0.5 - sl.x * 0.03, s: 0.92 + Math.random() * 0.28, rise: first || RM() ? 1 : -added * 0.3 });
+      placeSoldier(sol.length - 1); added++;
+    }
+    if (added) {
+      flushArmy();
+      if (!first && !RM()) { const s = sol[sol.length - added]; beam.position.set(s.x, 4.5, s.z); beam.visible = true; beam.material.uniforms.uOp.value = 1; }
+    }
+  }
+
+  /* ---------- frame loop ---------- */
+  let last = 0, acc = 0, frames = 0, tStart = 0;
+  function frame(tms) {
+    requestAnimationFrame(frame);
+    if (document.hidden || window.innerWidth < 2 || window.innerHeight < 2) { last = tms; return; }
+    const dt = Math.min(0.1, (tms - last) / 1000 || 0.016); last = tms;
+    const rm = RM();
+    U.uTime.value += dt * (rm ? 0.35 : 1);
+    // penalty blend
+    st.pen += (st.penT - st.pen) * Math.min(1, dt * 1.2); const p = st.pen; U.uPen.value = p;
+    U.uAcc.value.copy(C.accN).lerp(C.accP, p); U.uAcc2.value.copy(C.acc2N).lerp(C.acc2P, p); U.uFogC.value.copy(C.fogN).lerp(C.fogP, p);
+    U.uFogD.value = 0.03 + p * 0.03; scene.fog.color.copy(U.uFogC.value); scene.fog.density = U.uFogD.value; renderer.setClearColor(U.uFogC.value, 1);
+    gateLight.color.copy(U.uAcc.value); runeLight.color.copy(U.uAcc2.value); gateLight.intensity = 3.2 + Math.sin(U.uTime.value * 2.3) * 0.4 + st.boost * 3;
+    amb.color.setRGB(0.16 + p * 0.3, 0.22 - p * 0.08, 0.4 - p * 0.3);
+    shafts.forEach((s, i) => s.rotation.z = s.userData.rot + Math.sin(U.uTime.value * 0.2 + i) * 0.03);
+    // army rise
+    let dirty = false;
+    for (let i = 0; i < sol.length; i++) { const s = sol[i]; if (s.rise < 1) { s.rise = Math.min(1, s.rise + dt / 2.4); placeSoldier(i); dirty = true; } }
+    if (dirty) flushArmy();
+    if (beam.visible) { const u = beam.material.uniforms.uOp; u.value -= dt / 2.6; if (u.value <= 0) beam.visible = false; }
+    // camera
+    const k = Math.min(1, dt * 3);
+    st.mx += ((rm ? 0 : st.tx) - st.mx) * k; st.my += ((rm ? 0 : st.ty) - st.my) * k;
+    st.push += (st.pushT - st.push) * Math.min(1, dt * 2.5);
+    st.shake = Math.max(0, st.shake - dt * 1.8); st.boost = Math.max(0, st.boost - dt * 0.9);
+    const asp = W / H, baseZ = 11.5 + (asp < 1 ? (1 / asp - 1) * 5 : 0), sh = rm ? 0 : st.shake * st.shake * 0.5;
+    camera.position.set(st.mx * 1.1 + (Math.random() - 0.5) * sh, 2.7 - st.my * 0.5 + (Math.random() - 0.5) * sh, baseZ - st.push * 4.2);
+    camera.lookAt(st.mx * 0.25, 2.9 + st.push * 0.7, -6);
+    if (useComposer) {
+      bloom.strength = 0.95 + st.boost * 1.5 + p * 0.15;
+      fxPass.uniforms.uTime.value = U.uTime.value; fxPass.uniforms.uCA.value = 0.5 + st.boost * 3.5 + st.shake * 2;
+      composer.render();
+    } else renderer.render(scene, camera);
+    // adaptive quality
+    frames++; acc += dt;
+    if (acc >= 2) {
+      fps = Math.round(frames / acc); frames = 0; acc = 0;
+      if (autoQ && tms - tStart > 5000 && tier > 0) { if (fps < CONFIG.quality.fpsDown) { if (++lowHits >= 2) { lowHits = 0; applyTier(tier - 1); } } else lowHits = 0; }
+    }
+  }
+  function applyTier(t) {
+    tier = t; if (!ok) return;
+    const dpr = window.devicePixelRatio || 1, pr = [Math.min(dpr, 0.75), Math.min(dpr, 1.25), Math.min(dpr, 1.5)][t];
+    renderer.setPixelRatio(pr); if (composer) composer.setPixelRatio(pr);
+    particles.geometry.setDrawRange(0, CONFIG.quality.particles[t]);
+    mists[1].visible = t > 0; mists[2].visible = t > 1; shafts.forEach((s, i) => s.visible = t > 1 || (t === 1 && i < 3));
+    useComposer = !!composer && t > 0;
+    document.body.classList.toggle('lowq', t === 0);
+    resize();
+  }
+  function resize() {
+    if (!ok) return;
+    W = Math.max(64, window.innerWidth); H = Math.max(64, window.innerHeight);
+    renderer.setSize(W, H, false); if (composer) composer.setSize(W, H);
+    camera.aspect = W / H; camera.fov = W / H < 1 ? 62 : 52; camera.updateProjectionMatrix();
+    const px = renderer.getPixelRatio() * H / 900;
+    particles.material.uniforms.uPx.value = px; eyes.material.uniforms.uPx.value = px; smoke.material.uniforms.uPx.value = px;
+  }
+  function init() {
+    const cv = $('#bg');
+    if (!window.THREE) { cv.style.display = 'none'; return false; }
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false, powerPreference: 'high-performance' });
+      build();
+      if (THREE.EffectComposer && THREE.RenderPass && THREE.UnrealBloomPass && THREE.ShaderPass) {
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        bloom = new THREE.UnrealBloomPass(new THREE.Vector2(Math.max(64, window.innerWidth), Math.max(64, window.innerHeight)), 0.95, 0.8, 0.22);
+        composer.addPass(bloom);
+        fxPass = new THREE.ShaderPass({
+          uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uCA: { value: 0.5 }, uGrain: { value: 0.055 }, uVig: { value: 1.25 } },
+          vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+          fragmentShader: `uniform sampler2D tDiffuse;uniform float uTime,uCA,uGrain,uVig;varying vec2 vUv;
+            void main(){vec2 c=vUv-.5;float d=dot(c,c);vec2 o=c*d*uCA*.035;
+              vec3 col=vec3(texture2D(tDiffuse,vUv+o).r,texture2D(tDiffuse,vUv).g,texture2D(tDiffuse,vUv-o).b);
+              float n=fract(sin(dot(vUv*vec2(1387.,911.)+fract(uTime)*37.,vec2(12.9898,78.233)))*43758.5453);
+              col+=(n-.5)*uGrain;col*=1.-d*uVig;gl_FragColor=vec4(col,1.);}`
+        });
+        composer.addPass(fxPass);
+      }
+      ok = true;
+      const mobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(screen.width, screen.height) < 700;
+      const q = state.settings.quality; autoQ = q === 'auto';
+      applyTier(q === 'high' ? 2 : q === 'medium' ? 1 : q === 'low' ? 0 : mobile ? 1 : 2);
+      window.addEventListener('resize', resize);
+      window.addEventListener('pointermove', ev => { if (gyroOn && ev.pointerType !== 'mouse') return; st.tx = (ev.clientX / window.innerWidth - 0.5) * 2; st.ty = (ev.clientY / window.innerHeight - 0.5) * 2; }, { passive: true });
+      cv.addEventListener('webglcontextlost', ev => { ev.preventDefault(); }, false);
+      if (state.settings.gyro && !(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')) enableGyro();
+      tStart = performance.now(); last = tStart; requestAnimationFrame(frame);
+      return true;
+    } catch (e) { console.warn('[SYSTEM] 3D hub disabled:', e); ok = false; cv.style.display = 'none'; return false; }
+  }
+  async function enableGyro() {
+    if (!window.DeviceOrientationEvent) return false;
+    try { if (typeof DeviceOrientationEvent.requestPermission === 'function') { const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') return false; } } catch (e) { return false; }
+    if (!gyroOn) window.addEventListener('deviceorientation', ev => { if (ev.gamma == null) return; st.tx = clamp(ev.gamma / 28, -1, 1); st.ty = clamp((ev.beta - 50) / 28, -1, 1); }, { passive: true });
+    gyroOn = true; return true;
+  }
+  return {
+    init, setArmy, enableGyro,
+    setPenalty: b => { st.penT = b ? 1 : 0; },
+    setQuality: q => { autoQ = q === 'auto'; lowHits = 0; tStart = performance.now(); applyTier(q === 'high' ? 2 : q === 'low' ? 0 : q === 'medium' ? 1 : 2); },
+    bloomSpike: (v = 1) => { st.boost = Math.max(st.boost, v); },
+    shake: (v = 1) => { st.shake = Math.max(st.shake, v); },
+    push: v => { st.pushT = v; },
+    info: () => ok ? `3D hub active · ${['Low', 'Medium', 'High'][tier]} tier · ${fps} fps${composer ? '' : ' · post-processing unavailable'}.` : '3D hub unavailable (no WebGL or offline first load) — using the static backdrop.',
+    get ok() { return ok; }
+  };
+})();
+
+/* ===================== SECTION 11 — SOUND (Web Audio, fully synthesized) ===================== */
+const SFX = {
+  ctx: null, master: null, nbuf: null,
+  unlock() {
+    if (!this.ctx) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+        this.ctx = new AC(); this.master = this.ctx.createGain(); this.master.connect(this.ctx.destination); this.apply();
+        const len = this.ctx.sampleRate * 2; this.nbuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+        const d = this.nbuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      } catch (e) { this.ctx = null; return; }
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => { });
+  },
+  apply() { if (this.master) this.master.gain.value = state.settings.sound ? state.settings.volume * 0.55 : 0; },
+  tone(f, dur, o = {}) {
+    if (!this.ctx || !state.settings.sound) return;
+    const t = this.ctx.currentTime + (o.delay || 0), osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t); if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(o.vol || 0.2, t + (o.attack || 0.006)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    let node = osc;
+    if (o.lp) { const fl = this.ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = o.lp; osc.connect(fl); node = fl; }
+    node.connect(g); g.connect(this.master); osc.start(t); osc.stop(t + dur + 0.05);
+  },
+  noise(dur, o = {}) {
+    if (!this.ctx || !state.settings.sound) return;
+    const t = this.ctx.currentTime + (o.delay || 0), src = this.ctx.createBufferSource(), fl = this.ctx.createBiquadFilter(), g = this.ctx.createGain();
+    src.buffer = this.nbuf; src.loop = true; fl.type = o.type || 'bandpass'; fl.Q.value = o.q || 1;
+    fl.frequency.setValueAtTime(o.f || 1000, t); if (o.to) fl.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(o.vol || 0.2, t + (o.attack || 0.01)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(fl); fl.connect(g); g.connect(this.master); src.start(t); src.stop(t + dur + 0.05);
+  },
+  play(n) { if (this.ctx && state.settings.sound && this.lib[n]) try { this.lib[n].call(this); } catch (e) { } },
+  lib: {
+    tick() { this.tone(1700, 0.018, { type: 'square', vol: 0.025 }); },
+    blip() { this.tone(880, 0.05, { type: 'square', vol: 0.05 }); this.tone(1320, 0.06, { type: 'square', vol: 0.04, delay: 0.04 }); },
+    confirm() { this.tone(660, 0.1, { type: 'triangle', vol: 0.18 }); this.tone(990, 0.16, { type: 'triangle', vol: 0.18, delay: 0.07 }); },
+    reward() { [784, 1175, 1568].forEach((f, i) => this.tone(f, 0.5, { vol: 0.12, delay: i * 0.07 })); },
+    quest() { [523, 659, 784, 1047, 1319].forEach((f, i) => this.tone(f, 0.35, { type: 'triangle', vol: 0.16, delay: i * 0.085 })); this.tone(2093, 0.9, { vol: 0.06, delay: 0.45 }); },
+    levelUp() {
+      this.tone(80, 0.9, { type: 'sawtooth', vol: 0.22, to: 320, lp: 900 }); this.noise(0.9, { f: 300, to: 5000, vol: 0.12, q: 0.8 });
+      [392, 523, 659, 784, 1047, 1319, 1568].forEach((f, i) => this.tone(f, 0.45, { type: 'triangle', vol: 0.15, delay: 0.25 + i * 0.07 }));
+      [523, 659, 784, 1047].forEach(f => this.tone(f, 1.6, { vol: 0.09, delay: 0.85 }));
+    },
+    rankUp() {
+      this.tone(70, 1.6, { vol: 0.4, to: 32 }); this.noise(1.4, { type: 'lowpass', f: 3000, to: 120, vol: 0.2 });
+      [[196, 0], [293.7, 0], [392, 0.28], [587.3, 0.28], [493.9, 0.56], [784, 0.56], [987.8, 0.9], [1175, 0.9], [1568, 0.9]].forEach(([f, d]) => this.tone(f, 1.8 - d * 0.5, { type: 'sawtooth', vol: 0.085, delay: 0.25 + d, lp: 2600, attack: 0.03 }));
+      this.tone(3136, 1.6, { vol: 0.04, delay: 1.2 });
+    },
+    warn() {   // low-pitched penalty drone + alarm
+      this.tone(55, 3.2, { type: 'sawtooth', vol: 0.3, lp: 320, attack: 0.4 }); this.tone(58.3, 3.2, { type: 'sawtooth', vol: 0.26, lp: 300, attack: 0.4 }); this.tone(27.5, 3.2, { vol: 0.35, attack: 0.5 });
+      for (let i = 0; i < 4; i++) this.tone(233, 0.22, { type: 'square', vol: 0.06, delay: 0.3 + i * 0.5, lp: 1200 });
+      this.noise(3, { type: 'lowpass', f: 500, to: 180, vol: 0.08, attack: 0.5 });
+    },
+    arise() { this.noise(1.5, { f: 180, to: 2600, vol: 0.2, q: 1.4, attack: 0.5 }); this.tone(55, 1.6, { type: 'sawtooth', vol: 0.25, to: 165, lp: 500, attack: 0.3 }); this.tone(880, 0.9, { vol: 0.06, delay: 1.1 }); },
+    hit() { this.noise(0.16, { type: 'lowpass', f: 2200, to: 300, vol: 0.3 }); this.tone(150, 0.2, { type: 'square', vol: 0.16, to: 50, lp: 700 }); },
+    defeat() {
+      this.noise(1.1, { type: 'lowpass', f: 5000, to: 90, vol: 0.3 }); this.tone(200, 1, { type: 'sawtooth', vol: 0.2, to: 36, lp: 800 });
+      [523, 784, 1047, 1568].forEach((f, i) => this.tone(f, 1.3, { type: 'triangle', vol: 0.12, delay: 0.7 + i * 0.09 }));
+    }
+  }
+};
+
+/* ===================== SECTION 12 — FX: MOTION, NOTIFICATIONS, CINEMATICS ===================== */
+const mqRM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+function RM() { const m = state.settings.motion; return m === 'on' || (m !== 'off' && mqRM.matches); }
+function applyMotion() { document.body.classList.toggle('rm', RM()); }
+/* GSAP with a minimal fallback so the app still works if the CDN is unreachable */
+const G = window.gsap || {
+  _ap(t, v) {
+    const els = typeof t === 'string' ? $$(t) : (t && t.nodeType ? [t] : Array.isArray(t) ? t : [t]);
+    for (const e of els) { if (!e) continue; if (e.style) { if (v.opacity != null) e.style.opacity = v.opacity; if (v.width != null) e.style.width = v.width; e.style.transform = 'none'; if (v.letterSpacing) e.style.letterSpacing = v.letterSpacing; } }
+    if (v.onComplete) setTimeout(v.onComplete, ((v.duration || 0) + (v.delay || 0)) * 1000);
+  },
+  to(t, v) { this._ap(t, v); }, set(t, v) { this._ap(t, v); }, fromTo(t, a, v) { this._ap(t, v); }
+};
+async function typeInto(el, text, speed = 16) {
+  if (RM()) { el.textContent = text; return; }
+  let skip = false; const sk = () => skip = true;
+  el.textContent = ''; document.addEventListener('pointerdown', sk, { once: true });
+  for (let i = 0; i < text.length; i++) {
+    if (skip || !el.isConnected) break;
+    el.textContent += text[i];
+    if (i % 3 === 0 && text[i] !== ' ') SFX.play('tick');
+    await sleep(text[i] === '\n' ? speed * 6 : speed);
+  }
+  document.removeEventListener('pointerdown', sk);
+  el.textContent = text;
+}
+function cineShow(html, o = {}) {
+  return new Promise(res => {
+    const c = $('#cine'); c.className = o.cls || ''; c.style.opacity = '';
+    c.innerHTML = html + '<div class="c-skip">CLICK OR PRESS ESC TO CONTINUE</div>';
+    let done = false;
+    const end = () => {
+      if (done) return; done = true; clearTimeout(tm); FX.skipFn = null; c.onclick = null;
+      if (o.onEnd) o.onEnd();
+      G.to(c, { opacity: 0, duration: 0.35 });
+      setTimeout(() => { c.className = 'hidden'; c.style.opacity = ''; c.innerHTML = ''; res(); }, 380);   // timer, not a tween callback: must finish even if the tab is throttled
+    };
+    const tm = setTimeout(end, RM() ? Math.min(o.dur || 2600, 2200) : (o.dur || 2600));
+    FX.skipFn = end; setTimeout(() => { if (!done) c.onclick = end; }, 450);
+    G.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+    if (o.onShow) o.onShow(c);
+  });
+}
+const slam = (sel, from = 2.6) => G.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.75, ease: 'expo.out' });
+const rise = (sel, delay = 0.5) => G.fromTo(sel, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, delay, stagger: 0.22, ease: 'power2.out' });
+const FX = {
+  q: [], busy: false, skipFn: null, ariseQueued: false,
+  sfx(n) { SFX.play(n); },
+  skip() { if (this.skipFn) { this.skipFn(); return true; } return false; },
+  shake(v = 1) { World.shake(v); if (RM()) return; const a = $('#app'); a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake'); },
+  flash(color = '#cfe8ff', op = 0.75) { if (RM()) op *= 0.3; const f = $('#flash'); f.style.background = color; G.fromTo(f, { opacity: op }, { opacity: 0, duration: 0.8, ease: 'power2.out' }); },
+  enqueue(fn) { this.q.push(fn); this.pump(); },
+  async pump() { if (this.busy) return; this.busy = true; while (this.q.length) { const fn = this.q.shift(); try { await fn(); } catch (e) { console.warn(e); } } this.busy = false; },
+  notify(kind, title, lines) {
+    const box = $('#toasts'); while (box.children.length >= 4) box.firstChild.remove();
+    const el = document.createElement('div'); el.className = 'win toast ' + kind;
+    el.innerHTML = `<div class="tt">[ ${esc(title)} ]</div><div class="tl"></div>`;
+    box.appendChild(el);
+    const kill = () => { if (!el.isConnected) return; G.to(el, { opacity: 0, x: 40, duration: 0.3 }); setTimeout(() => el.remove(), 320); };
+    el.onclick = kill; setTimeout(kill, 6500);
+    typeInto(el.querySelector('.tl'), (lines || []).filter(Boolean).join('\n'), 9);
+    this.sfx(kind === 'reward' ? 'reward' : kind === 'warn' ? 'hit' : 'blip');
+  },
+  levelUp(from, to) {
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub">THE SYSTEM</div><div class="c-big" id="cB">LEVEL UP</div><div class="c-line cL">LV. ${from} &nbsp;→&nbsp; <b class="acc" style="font-size:1.5em">LV. ${to}</b></div><div class="c-line cL dim">Next level in ${levelInfo().need - levelInfo().into} XP.</div></div>`, {
+      dur: 3000, onShow: () => { SFX.play('levelUp'); FX.flash('#cfe8ff', 0.85); FX.shake(1); World.bloomSpike(1); World.push(1); slam('#cB'); rise('.cL'); }, onEnd: () => World.push(0)
+    }));
+  },
+  rankUp(idx) {
+    const r = CONFIG.ranks[idx], p = CONFIG.ranks[idx - 1];
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub goldt">[ RANK UP ]</div><div class="c-rank" id="cB">${r.id}</div><div class="c-line cL">${p ? p.name : ''} &nbsp;→&nbsp; <b class="goldt">${r.name}</b></div><div class="c-line cL dim">The System has re-evaluated you, ${esc(state.player.name)}.</div></div>`, {
+      dur: 4200, onShow: () => { SFX.play('rankUp'); FX.flash('#ffe9a8', 0.95); FX.shake(1.3); World.bloomSpike(1.4); World.push(1.25); slam('#cB', 4); rise('.cL', 0.8); }, onEnd: () => World.push(0)
+    }));
+  },
+  arise(label) {
+    if (this.ariseQueued) return; this.ariseQueued = true;
+    this.enqueue(() => { this.ariseQueued = false; return cineShow(`<div class="c-box"><div class="c-big vio" id="cB">ARISE</div><div class="c-line cL">${esc(label || '')}</div><div class="c-line cL dim">Shadow army: ${armyCount()}</div></div>`, {
+      cls: 'arise', dur: 3000, onShow: () => { document.body.classList.add('hide-ui'); SFX.play('arise'); World.bloomSpike(0.7); World.push(0.55); slam('#cB', 1.8); rise('.cL', 0.6); }, onEnd: () => { document.body.classList.remove('hide-ui'); World.push(0); }
+    }); });
+  },
+  dayClear(info) {
+    this.flash('#bfe3ff', 0.5); World.bloomSpike(0.6); SFX.play('quest');
+    this.notify('reward', 'QUEST COMPLETE', ['Daily Quest cleared.', '+' + info.xp + ' XP   VIT +' + CONFIG.stat.dayClearVIT + '   Energy +' + CONFIG.energy.dayClear, 'Streak: ' + info.streak + ' day' + (info.streak > 1 ? 's' : '')]);
+  },
+  bossIntro(b) {
+    return new Promise(done => this.enqueue(async () => {
+      await cineShow(`<div class="c-box"><div class="c-sub redt">A BOSS HAS APPEARED</div><div style="font-size:clamp(60px,14vw,120px);line-height:1.1" id="cS">${b.sig}</div><div class="c-big red" id="cB" style="font-size:clamp(26px,6vw,64px)">${b.name}</div><div class="c-line cL dim">${b.kind} · ${b.tasks.length} strikes to kill</div><div class="c-hpbar cL"><div class="bar boss"><i style="width:100%"></i></div></div></div>`, {
+        cls: 'red', dur: 3400, onShow: () => { SFX.play('warn'); FX.shake(0.8); FX.flash('#ff5a5a', 0.45); World.push(0.8); slam('#cS', 3); slam('#cB', 1.6); rise('.cL', 0.7); }, onEnd: () => World.push(0)
+      }); done();
+    }));
+  },
+  bossDefeat(name, loot) {
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub goldt">DUNGEON CLEARED</div><div class="c-big gold" id="cB" style="font-size:clamp(26px,6vw,64px)">${name}</div><div class="c-hpbar"><div class="bar boss"><i id="cHp" style="width:25%"></i></div></div><div class="c-line cL redt">HAS BEEN SLAIN</div>${loot.map(l => `<div class="c-line cL">${esc(l)}</div>`).join('')}</div>`, {
+      dur: 4200, onShow: () => { SFX.play('defeat'); FX.flash('#ffffff', 0.9); FX.shake(1.2); World.bloomSpike(1.2); World.push(0.9); G.fromTo('#cB', { scale: 1, opacity: 1 }, { scale: 1, opacity: 0.45, duration: 1.2 }); requestAnimationFrame(() => { const h = $('#cHp'); if (h) h.style.width = '0%'; }); rise('.cL', 0.7); }, onEnd: () => World.push(0)
+    }));
+    this.arise(name);
+  },
+  floorClear(f, xp) {
+    const nx = FLOORS.find(x => x.id === f.id + 1), rn = ['I', 'II', 'III'][f.id - 1];
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub goldt">FLOOR ${rn} CLEARED</div><div class="c-big gold" id="cB" style="font-size:clamp(28px,6.5vw,72px)">${f.boss}</div><div class="c-line cL redt">HAS FALLEN</div><div class="c-line cL">+${xp} XP · all stats +2 · Streak Freeze</div><div class="c-line cL acc">${nx ? 'FLOOR ' + ['I', 'II', 'III'][nx.id - 1] + ' UNLOCKED — ' + nx.name : 'THE TOWER IS CONQUERED'}</div></div>`, {
+      dur: 5200, onShow: () => { SFX.play('rankUp'); FX.flash('#ffe9a8', 0.95); FX.shake(1.4); World.bloomSpike(1.5); World.push(1.2); slam('#cB', 3); rise('.cL', 0.8); }, onEnd: () => World.push(0)
+    }));
+    this.arise(f.boss);
+  },
+  achievement(a) {
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub goldt">TITLE ACQUIRED</div><div class="c-big gold" id="cB" style="font-size:clamp(24px,5.5vw,60px)">« ${a.n} »</div><div class="c-line cL">${a.d}</div><div class="c-line cL dim">Equip it from the Titles screen.</div></div>`, {
+      dur: 2800, onShow: () => { SFX.play('reward'); FX.flash('#ffe9a8', 0.4); World.bloomSpike(0.6); G.fromTo('#cB', { opacity: 0, letterSpacing: '0.8em' }, { opacity: 1, letterSpacing: '0.12em', duration: 0.9, ease: 'power3.out' }); rise('.cL', 0.6); }
+    }));
+  },
+  penaltyEnter(r) {
+    if (!r.missed) { this.notify('info', 'STREAK FREEZE CONSUMED', [r.frozen + ' missed day' + (r.frozen > 1 ? 's were' : ' was') + ' absorbed.', 'Your streak of ' + state.streak + ' survives. Do not rely on it.']); return; }
+    this.enqueue(() => cineShow(`<div class="c-box"><div class="c-sub redt">[ PENALTY ]</div><div class="c-big red" id="cB" style="font-size:clamp(34px,8vw,92px)">QUEST FAILED</div><div class="c-line cL">Daily Quest not completed — ${r.missed} day${r.missed > 1 ? 's' : ''}.</div><div class="c-line cL redt">Streak ${r.streakLost} → 0 &nbsp;·&nbsp; −${r.xpLost} XP &nbsp;·&nbsp; Energy ${state.hp}/${CONFIG.energy.max}</div>${r.frozen ? `<div class="c-line cL dim">${r.frozen} day(s) absorbed by Streak Freeze.</div>` : ''}<div class="c-line cL">You are being transferred to the Penalty Zone.</div></div>`, {
+      cls: 'red', dur: 5200, onShow: () => { SFX.play('warn'); FX.flash('#ff2a2a', 0.7); FX.shake(1.2); slam('#cB', 2.2); rise('.cL', 0.8); }
+    }));
+  },
+  penaltyCleared(xp) { SFX.play('quest'); this.flash('#bfe3ff', 0.6); this.notify('reward', 'PENALTY QUEST CLEARED', ['You survived the Penalty Zone.', '+' + xp + ' XP   VIT +1   Energy +' + CONFIG.energy.penaltyClear, 'Returning to the hub.']); }
+};
+
+/* ===================== SECTION 13 — AWAKENING (first run) ===================== */
+async function awakening() {
+  const el = $('#awaken'); el.classList.remove('hidden');
+  el.innerHTML = `<div class="win aw-win"><div class="win-h"><span class="t">SYSTEM</span></div><div class="aw-text" id="awT"></div><div class="aw-ctl" id="awC"></div></div>`;
+  const T = $('#awT'), Cc = $('#awC');
+  const say = async txt => { Cc.innerHTML = ''; await typeInto(T, txt, 20); };
+  const btn = label => new Promise(r => { Cc.innerHTML = `<div class="row"><span class="sp"></span><button class="btn pri" id="awB">${label}</button></div>`; const b = $('#awB'); b.onclick = () => { SFX.unlock(); SFX.play('confirm'); r(); }; b.focus(); });
+  const form = html => new Promise(r => { Cc.innerHTML = `<form id="awF" class="form">${html}<div class="full row"><span class="sp"></span><button class="btn pri">CONFIRM</button></div></form>`; const f = $('#awF'); const first = f.querySelector('input'); if (first) first.focus(); f.onsubmit = ev => { ev.preventDefault(); SFX.unlock(); SFX.play('confirm'); const v = {}; new FormData(f).forEach((x, k) => v[k] = String(x).trim()); r(v); }; });
+
+  await say('A dormant signal has been detected.\n\nYou have met the conditions to become a Player.\nWill you accept?');
+  await btn('ACCEPT');
+  FX.flash('#cfe8ff', 0.6); World.bloomSpike(0.9);
+  await say('Registration started.\n\nState your name, Player.');
+  const a = await form('<label class="f full">Name<input type="text" name="name" maxlength="24" required autocomplete="off" placeholder="Your name"></label>');
+  state.player.name = a.name.slice(0, 24) || 'Player';
+  await say(`Welcome, ${state.player.name}.\n\nYour job claims 8 hours a day. The System will take only what remains.\nHow many hours can you give it?`);
+  const h = await form(`<label class="f">Weekday hours<input type="number" name="wd" min="0.5" max="8" step="0.5" value="${CONFIG.hours.weekday}" required></label>
+    <label class="f">Weekend hours<input type="number" name="we" min="1" max="12" step="0.5" value="${CONFIG.hours.weekend}" required></label>
+    <label class="f full">Current CTC (LPA)<input type="number" name="ctc" min="0.1" max="500" step="0.1" value="${CONFIG.salary.current}" required></label>`);
+  state.player.hoursWeekday = clamp(+h.wd || CONFIG.hours.weekday, 0.5, 8); state.player.hoursWeekend = clamp(+h.we || CONFIG.hours.weekend, 1, 12); state.player.ctc = clamp(+h.ctc || CONFIG.salary.current, 0.1, 500);
+  await say(`Assessment complete.\n\nRank: E\nTitle: The Weakest Hunter\nCurrent worth: ₹${state.player.ctc} LPA\nObjective: ₹${CONFIG.salary.milestones[0]}–${CONFIG.salary.milestones[1]} LPA within 6 months. Stretch: ₹${CONFIG.salary.milestones[2]} LPA.\n\nThe tower has three floors. You will climb all of them.`);
+  await btn('CONTINUE');
+  await say('Your first Daily Quest has been assigned.\n\nClear it and you grow stronger.\nMiss it and the Penalty Zone awaits.\n\nThat is the only rule.' + (verifyOn() ? '\n\nLinked accounts will be checked. The System does not take your word for it.' : ''));
+  await btn('ARISE');
+  state.onboarded = true; state.startDate = todayKey(); state.lastDate = null;
+  if (!state.jobs.length) SEED_COMPANIES.forEach(([c, t]) => addJob({ company: c, tier: TIERS[t] }));
+  FX.flash('#ffffff', 0.9); World.bloomSpike(1.3); FX.shake(0.8); SFX.play('levelUp');
+  G.to(el, { opacity: 0, duration: 0.6 }); setTimeout(() => { el.classList.add('hidden'); el.innerHTML = ''; el.style.opacity = ''; }, 650);
+  ui.view = 'quests'; boot();
+  FX.notify('info', 'DAILY QUEST ASSIGNED', ['Tick objectives as you finish them.', 'Press ? for keyboard shortcuts.']);
+}
+
+/* ===================== SECTION 14 — BOOT ===================== */
+function afterRollover() {
+  weekBosses(); checkAchievements(); save(); render(); renderTimer();
+  World.setArmy(armyCount()); World.setPenalty(penaltyActive());
+  if (state.penaltyNotice) {
+    const r = state.penaltyNotice; state.penaltyNotice = null; save();
+    FX.penaltyEnter(r);
+    if (penaltyActive()) { ui.view = 'penalty'; render(); }
+  }
+}
+function boot() { $('#app').classList.remove('hidden'); rollover(); afterRollover(); syncAccounts(false); }
+function tick() {
+  if (!state.onboarded) return;
+  tickTimer(); updateCountdowns();
+  if (!document.hidden && Date.now() - sync.last > CONFIG.verify.autoSyncMin * 6e4) syncAccounts(false);
+  if (state.lastDate && state.lastDate !== todayKey()) { rollover(); afterRollover(); FX.notify('info', 'NEW DAY', ['A new Daily Quest has been assigned.']); }
+}
+function init() {
+  loadState(); applyMotion(); bindUi(); World.init();
+  if (mqRM.addEventListener) mqRM.addEventListener('change', applyMotion);
+  document.addEventListener('pointerdown', () => SFX.unlock(), { passive: true });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+  setInterval(tick, 500);
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(() => { });   // installable + offline
+  if (state.onboarded) boot(); else awakening();
+  /* console helpers for tuning/testing: SYS.shiftDays(1) simulates tomorrow, SYS.xp(500) grants XP */
+  window.SYS = { CONFIG, get state() { return state; }, shiftDays(n) { dayShift += n; tick(); return todayKey(); }, xp(n) { gainXp(n); commit(); }, readiness };
+}
+init();
+
+</script>
+</body>
+</html>
