@@ -1,8 +1,34 @@
 {
  "ok": true,
  "user": "Baldanaresh",
- "generated": 1794811852,
+ "generated": 1794945423,
  "submissions": [
+  {
+   "slug": "find-if-path-exists-in-graph",
+   "title": "Find if Path Exists in Graph",
+   "ts": 1794931380,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Graph Theory"
+   ]
+  },
+  {
+   "slug": "find-if-path-exists-in-graph",
+   "title": "Find if Path Exists in Graph",
+   "ts": 1794931077,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Graph Theory"
+   ]
+  },
   {
    "slug": "3sum-closest",
    "title": "3Sum Closest",
