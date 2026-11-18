@@ -1,8 +1,33 @@
 {
  "ok": true,
  "user": "Baldanaresh",
- "generated": 1794945423,
+ "generated": 1794995585,
  "submissions": [
+  {
+   "slug": "keys-and-rooms",
+   "title": "Keys and Rooms",
+   "ts": 1794980006,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory"
+   ]
+  },
+  {
+   "slug": "number-of-provinces",
+   "title": "Number of Provinces",
+   "ts": 1794977969,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Graph Theory"
+   ]
+  },
   {
    "slug": "find-if-path-exists-in-graph",
    "title": "Find if Path Exists in Graph",
