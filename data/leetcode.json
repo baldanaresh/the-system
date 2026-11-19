@@ -1,8 +1,62 @@
 {
  "ok": true,
  "user": "Baldanaresh",
- "generated": 1794995585,
+ "generated": 1795075736,
  "submissions": [
+  {
+   "slug": "max-area-of-island",
+   "title": "Max Area of Island",
+   "ts": 1795072157,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "number-of-islands",
+   "title": "Number of Islands",
+   "ts": 1795070995,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "flood-fill",
+   "title": "Flood Fill",
+   "ts": 1795069559,
+   "accepted": true,
+   "difficulty": "easy",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "flood-fill",
+   "title": "Flood Fill",
+   "ts": 1795069018,
+   "accepted": false,
+   "difficulty": "easy",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Matrix"
+   ]
+  },
   {
    "slug": "keys-and-rooms",
    "title": "Keys and Rooms",
