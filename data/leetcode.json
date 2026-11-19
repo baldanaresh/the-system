@@ -1,8 +1,36 @@
 {
  "ok": true,
  "user": "Baldanaresh",
- "generated": 1795075736,
+ "generated": 1795084941,
  "submissions": [
+  {
+   "slug": "surrounded-regions",
+   "title": "Surrounded Regions",
+   "ts": 1795081257,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "surrounded-regions",
+   "title": "Surrounded Regions",
+   "ts": 1795080101,
+   "accepted": false,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+   ]
+  },
   {
    "slug": "max-area-of-island",
    "title": "Max Area of Island",
