@@ -1,8 +1,44 @@
 {
  "ok": true,
  "user": "Baldanaresh",
- "generated": 1795109344,
+ "generated": 1795255598,
  "submissions": [
+  {
+   "slug": "shortest-path-in-binary-matrix",
+   "title": "Shortest Path in Binary Matrix",
+   "ts": 1795255136,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Breadth-First Search",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "shortest-path-in-binary-matrix",
+   "title": "Shortest Path in Binary Matrix",
+   "ts": 1795253780,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Breadth-First Search",
+    "Matrix"
+   ]
+  },
+  {
+   "slug": "shortest-path-in-binary-matrix",
+   "title": "Shortest Path in Binary Matrix",
+   "ts": 1795253744,
+   "accepted": true,
+   "difficulty": "medium",
+   "tags": [
+    "Array",
+    "Breadth-First Search",
+    "Matrix"
+   ]
+  },
   {
    "slug": "pacific-atlantic-water-flow",
    "title": "Pacific Atlantic Water Flow",
